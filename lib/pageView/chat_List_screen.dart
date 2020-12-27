@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:marasil/model/user.dart';
+import 'package:marasil/pageView/search_screen.dart';
 import 'package:marasil/resources/firebase_repository.dart';
 import 'package:marasil/utils/universal_variables.dart';
 import 'package:marasil/utils/utilities.dart';
 import 'package:marasil/widget/customAppBar.dart';
+import 'package:marasil/widget/customTile.dart';
 
 class ChatListScreen extends StatefulWidget {
   @override
@@ -13,15 +16,17 @@ class _ChatListScreenState extends State<ChatListScreen> {
   //for called class
   final FirebaseRepository _repository = FirebaseRepository();
   String currentUserId;
-  String initials; //for name user in appBar
+  String initials=''; //for name user in appBar
   @override
   void initState() {
     super.initState();
     _repository.getCurrentUser().then((user) {
       setState(() {
         currentUserId = user.uid;
-        initials =
-            Utils.getInitials(user.displayName); //for name user in appBar
+
+        initials = Utils.getInitials(user.displayName);
+
+        //for name user in appBar
       });
     });
   }
@@ -31,6 +36,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
     return Scaffold(
       backgroundColor: UniversalVariables.blackColor,
       appBar: customAppBar(context),
+      floatingActionButton: newChatButtom(),
+      body: chatListContainer(currentUserId),
     );
   }
 
@@ -44,30 +51,96 @@ class _ChatListScreenState extends State<ChatListScreen> {
         ),
         onPressed: () {},
       ),
-      title: UserCircle(
-          initials),
+      title: UserCircle(initials),
       centerTitle: true,
-      actions: [IconButton(
-        icon: Icon(
-          Icons.search,
-          color: Colors.white,
+      actions: [
+        IconButton(
+          icon: Icon(
+            Icons.search,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>SearchScreen()));
+          },
         ),
-        onPressed: () {},
-      ),IconButton(
-        icon: Icon(
-          Icons.more_vert,
-          color: Colors.white,
+        IconButton(
+          icon: Icon(
+            Icons.more_vert,
+            color: Colors.white,
+          ),
+          onPressed: () {},
         ),
-        onPressed: () {},
-      ),],
-
+      ],
     );
   }
 }
-// this class for show user name + if online or not
+
+//this class for chatlist
+class chatListContainer extends StatefulWidget {
+  final String currentUserId;
+  chatListContainer(this.currentUserId);
+  @override
+  _chatListContainerState createState() => _chatListContainerState();
+}
+
+class _chatListContainerState extends State<chatListContainer> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Padding(
+        padding: EdgeInsets.all(10),
+        child: ListView.builder(
+            itemCount: 2,
+            itemBuilder: (context, index) {
+              return CustomTile(
+                mini: false,
+                onTap: () {},
+                title: Text(
+                  'Mohamad',
+                  style: TextStyle(color: Colors.white, fontSize: 16.0),
+                ),
+                subtitle: Text(
+                  'hello',
+                  style: TextStyle(color: Colors.grey, fontSize: 14.0),
+                ),
+                leading: Container(
+                  constraints: BoxConstraints(maxHeight: 60, maxWidth: 60),
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        maxRadius: 30,
+                        backgroundColor: Colors.grey,
+                        backgroundImage: NetworkImage(
+                            'https://digitalsynopsis.com/wp-content/uploads/2017/12/funny-agency-life-creative-designer-copywriter-memes-1.jpg'),
+                      ),
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: Container(
+                          height: 30.0,
+                          width: 30.0,
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: UniversalVariables.onlineDotColor,
+                              border: Border.all(
+                                  color: UniversalVariables.blackColor,
+                                  width: 2)),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              );
+            }),
+      ),
+    );
+  }
+}
+
+// this class for show user name + if online or not conecte with CustomAppBar
 class UserCircle extends StatelessWidget {
   final String text;
   UserCircle(this.text);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -80,13 +153,13 @@ class UserCircle extends StatelessWidget {
         children: [
           Align(
             alignment: Alignment.center,
-            child: Text(
-              text,
-              style: TextStyle(
+            child:
+              Text(text, style: TextStyle(
                   color: UniversalVariables.lightBlueColor,
                   fontWeight: FontWeight.bold,
-                  fontSize: 13.0),
-            ),
+                  fontSize: 13.0),),
+
+
           ),
           Align(
             alignment: Alignment.bottomRight,
@@ -103,6 +176,20 @@ class UserCircle extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+// this class for fiutAction button
+class newChatButtom extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          gradient: UniversalVariables.fabGradient,
+          borderRadius: BorderRadius.circular(50.0)),
+      child: Icon(Icons.edit, color: Colors.white, size: 25.0),
+      padding: EdgeInsets.all(15.0),
     );
   }
 }
