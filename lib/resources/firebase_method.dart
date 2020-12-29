@@ -1,9 +1,13 @@
 //this class will include all scours method code to firebase
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:marasil/model/messages.dart';
 import 'package:marasil/model/user.dart';
+import 'package:marasil/provider/image_upload_provider.dart';
 import 'package:marasil/utils/utilities.dart';
 
 class FirebaseMethods {
@@ -12,6 +16,7 @@ class FirebaseMethods {
   GoogleSignIn _googleSignIn = GoogleSignIn();
   static final Firestore firestore = Firestore.instance;
   User user = User();
+  StorageReference _storageReference;
 
   // this method for got currentUser from Auth
   Future<FirebaseUser> getCurrentUser() async {
@@ -101,4 +106,49 @@ class FirebaseMethods {
         .add(map);
   }
 
+  // this method for upload image to storage
+  Future<String> uploadImageToStorage(File image) async {
+    try {
+      _storageReference =
+          FirebaseStorage.instance.ref().child('${DateTime.now()}');
+      StorageUploadTask _storageUploadTask = _storageReference.putFile(image);
+      var url =
+          await (await _storageUploadTask.onComplete).ref.getDownloadURL();
+      return url;
+    } catch (ex) {
+      print(ex.toString());
+    }
+  }
+
+// this method for uploadIma=ge to fire store
+  void setImageMsg(String url, String senderId, String receiverId) async {
+    Message _message;
+    _message = Message.imageMessage(
+      message: 'IMAGE',
+      receiverId: receiverId,
+      senderId: senderId,
+      photoUrl: url,
+      type: 'image',
+      timestamp: Timestamp.now(),
+    );
+    var map = _message.toImageMap();
+    await firestore
+        .collection('messages')
+        .document(_message.senderId)
+        .collection(_message.receiverId)
+        .add(map);
+
+    await firestore
+        .collection('messages')
+        .document(_message.receiverId)
+        .collection(_message.senderId)
+        .add(map);
+  }
+
+  uploadImage(File image, String receiverId, String senderId, ImageUploadProvider imageProvide) async {
+    imageProvide.setToLoading();
+    String url = await uploadImageToStorage(image);
+    imageProvide.setToIdle();
+    setImageMsg(url, senderId, receiverId);
+  }
 }

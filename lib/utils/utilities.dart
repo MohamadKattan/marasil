@@ -1,8 +1,14 @@
 // this class for great sing and make username uniq
 
+import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
-
+import 'package:image_picker/image_picker.dart';
+import 'package:image/image.dart' as Im;
+import 'package:marasil/provider/image_upload_provider.dart';
+import 'package:path_provider/path_provider.dart';
 class Utils {
+
   // this class for great sing and make username uniq
   static String getUsername(String email) {
     return 'live${email.split('@'[0])}';
@@ -16,5 +22,22 @@ class Utils {
     String lastNameInitials =
         nameSplit[1][0]; //[1]=lastname+[0] for firstLitter from lastName
     return firstNameInitials + lastNameInitials;
+  }
+// this method conected with method in chat screen for send an image
+  static Future <File> pickImage({@required ImageSource source})async {
+    File selectedImage = await ImagePicker.pickImage(source: source);
+    return compreesImage(selectedImage);
+  }
+  // this method for compress thie image after pick and befor upload
+  static Future<File>compreesImage(File imageToCompress)async {
+    final tempDir=await getTemporaryDirectory();
+    final path =  tempDir.path;
+    int random = Random().nextInt(1000);
+    Im.Image image = Im.decodeImage(imageToCompress.readAsBytesSync());
+    Im.copyResize(image,width: 500,height: 500,);
+
+    return new File('$path/img_$random.jpg')
+        ..writeAsBytesSync(Im.encodeJpg(image,quality: 85));
+
   }
 }

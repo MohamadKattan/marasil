@@ -33,6 +33,17 @@ class Message {
     map['timestamp'] = this.timestamp;
     return map;
   }
+// for set with image
+  Map toImageMap() {
+    var map = Map<String, dynamic>();
+    map['senderId'] = this.senderId;
+    map['receiverId'] = this.receiverId;
+    map['type'] = this.type;
+    map['message'] = this.message;
+    map['photoUrl'] = this.photoUrl;
+    map['timestamp'] = this.timestamp;
+    return map;
+  }
 
   // this for get
   Message.fromMap(Map<String, dynamic> map) {

@@ -1,14 +1,21 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:marasil/enum/view_state.dart';
 import 'package:marasil/model/messages.dart';
 import 'package:marasil/model/user.dart';
+import 'package:marasil/provider/image_upload_provider.dart';
 import 'package:marasil/resources/firebase_repository.dart';
 import 'package:marasil/utils/universal_variables.dart';
+import 'package:marasil/utils/utilities.dart';
 import 'package:marasil/widget/customAppBar.dart';
 import 'package:marasil/widget/customTile.dart';
+import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
   final User receiver;
@@ -26,11 +33,11 @@ class _ChatScreenState extends State<ChatScreen> {
   bool isWritting = false;
   // id sender
   User sender;
-
   // for show container emoji
   bool showEmojiPicker= false;
-
   String _currentUser;
+  //for call
+  ImageUploadProvider _imageUploadProvider;
   @override
   void initState() {
     super.initState();
@@ -66,6 +73,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _imageUploadProvider=Provider.of<ImageUploadProvider>(context);
     return Scaffold(
       appBar: customAppBar(context),
       body: Container(
@@ -74,6 +82,10 @@ class _ChatScreenState extends State<ChatScreen> {
             Flexible(
               child: messageList(),
             ),
+            _imageUploadProvider.getViewStata==ViewState.LOADING
+                ?Container(alignment: Alignment.centerRight,margin: EdgeInsets.only(right: 5.0),
+              child: CircularProgressIndicator(),)
+                :Container(),
             controlChats(),
             showEmojiPicker?Container(child: EmojiContainer(),):Container(),
           ],
@@ -174,10 +186,11 @@ class _ChatScreenState extends State<ChatScreen> {
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Icon(Icons.mic),
                 ),
+          SizedBox(width: 10,),
           isWritting
               ? Container()
-              : Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10),
+              : GestureDetector(
+                 onTap: ()=>pickImage(source: ImageSource.camera),
                   child: Icon(Icons.camera_alt),
                 ),
           isWritting
@@ -347,6 +360,18 @@ getMessage(Message message){
       numRecommended: 50,
     );
 
+  }
+
+
+//this method for pick image from cammer
+  pickImage({@required ImageSource source})async {
+    File selectedImage =await Utils.pickImage(source:source);
+    _repository.uploadImage(
+      image:selectedImage,
+      receiverId: widget.receiver.uid,
+      senderId:_currentUser,
+      imageProvide:_imageUploadProvider,
+    );
   }
 
 

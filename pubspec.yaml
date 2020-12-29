@@ -36,6 +36,11 @@ dependencies:
   shimmer:
   gradient_app_bar: ^0.0.1
   emoji_picker:
+  image_picker: ^0.6.3+1
+  path_provider: ^1.6.1
+  firebase_storage: ^3.1.1
+  image:
+  provider:
 dev_dependencies:
   flutter_test:
     sdk: flutter
