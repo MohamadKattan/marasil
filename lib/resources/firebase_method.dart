@@ -2,6 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:marasil/model/messages.dart';
 import 'package:marasil/model/user.dart';
 import 'package:marasil/utils/utilities.dart';
 
@@ -81,4 +82,23 @@ class FirebaseMethods {
     }
     return userList;
   }
+
+// this method for add messages to data base
+  Future<void> addMessageToDb(
+      Message message, User sender, User receiver) async {
+    var map = message.toMap();
+
+    await firestore
+        .collection('messages')
+        .document(message.senderId)
+        .collection(message.receiverId)
+        .add(map);
+
+    await firestore
+        .collection('messages')
+        .document(message.receiverId)
+        .collection(message.senderId)
+        .add(map);
+  }
+
 }

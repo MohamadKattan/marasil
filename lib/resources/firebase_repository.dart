@@ -1,5 +1,6 @@
 // this class it will be short for code from code from firebase_method
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:marasil/model/messages.dart';
 import 'package:marasil/model/user.dart';
 import 'package:marasil/resources/firebase_method.dart';
 
@@ -17,4 +18,8 @@ class FirebaseRepository {
   Future<void>signOut()=>_firebaseMethods.signOut();
 
   Future<List<User>> fetchAllUsers(FirebaseUser user)=>_firebaseMethods.fetchAllUsers(user);
+
+  void addMessageToDb(Message message, User sender,User receiver) {
+    _firebaseMethods.addMessageToDb(message,sender,receiver);
+  }
 }

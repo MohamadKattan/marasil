@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:marasil/model/user.dart';
 import 'package:marasil/resources/firebase_repository.dart';
+import 'package:marasil/screens/chatScreen.dart';
 import 'package:marasil/utils/universal_variables.dart';
+import 'package:marasil/widget/customTile.dart';
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -22,9 +24,9 @@ class _SearchScreenState extends State<SearchScreen> {
   void initState() {
     super.initState();
     _repository.getCurrentUser().then((FirebaseUser user) {
-      _repository.fetchAllUsers(user).then((List<User>list){
+      _repository.fetchAllUsers(user).then((List<User> list) {
         setState(() {
-          userList=list;
+          userList = list;
         });
       });
     });
@@ -35,8 +37,13 @@ class _SearchScreenState extends State<SearchScreen> {
     return Scaffold(
       backgroundColor: UniversalVariables.blackColor,
       appBar: searchUserAppBar(context),
+      body: Container(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: buildSuggestions(query),
+      ),
     );
   }
+
 // this method for search appBar
   searchUserAppBar(BuildContext context) {
     return GradientAppBar(
@@ -69,8 +76,8 @@ class _SearchScreenState extends State<SearchScreen> {
               suffixIcon: IconButton(
                 icon: Icon(Icons.close, color: Colors.white),
                 onPressed: () {
-                  WidgetsBinding.instance
-                      .addPostFrameCallback((_) => searchEditingController.clear());
+                  WidgetsBinding.instance.addPostFrameCallback(
+                      (_) => searchEditingController.clear());
                 },
               ),
               border: InputBorder.none,
@@ -85,5 +92,50 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
       ),
     );
+  }
+
+// this method for show resulut search user in list view
+  buildSuggestions(String query) {
+    //1-- here when we start type on text failed will start see some sugget useer
+    List<User> suggestList = query.isEmpty
+        ? []
+        : userList.where((User user) {
+            String _getuserName = user.username.toLowerCase();
+            String _getName = user.name.toLowerCase();
+            String _query = query.toLowerCase();
+            bool matchUserName = _getuserName.contains(_query);
+            bool matchName = _getName.contains(_query);
+            return (matchName || matchUserName);
+          }).toList();
+    // 2-- it will put data from result in list view
+    return ListView.builder(
+        itemCount: suggestList.length,
+        itemBuilder: (context, index) {
+          User searchedUser = User(
+            uid: suggestList[index].uid,
+            username: suggestList[index].username,
+            name: suggestList[index].name,
+            profilePhoto: suggestList[index].profilePhoto,
+          );
+          // 3-- it will show in customtile include listview from the up
+          return CustomTile(
+              mini: false,
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>ChatScreen(receiver:searchedUser)));
+              },
+              leading: CircleAvatar(
+                backgroundImage: NetworkImage(searchedUser.profilePhoto),
+                backgroundColor: Colors.grey,
+              ),
+              title: Text(
+                searchedUser.username,
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                searchedUser.name,
+                style: TextStyle(color: UniversalVariables.greyColor),
+              ));
+        });
   }
 }

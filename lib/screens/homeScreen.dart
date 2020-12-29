@@ -27,7 +27,10 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
         Container(child: ChatListScreen(),),
           Center(
-            child: Text('callScreen'),
+            child: FlatButton(onPressed: ()async{
+              Navigator.pop(context);
+              await _repository.signOut();
+            },child: Text('callScreen')),
           ),
           Center(
             child: Text('contactScreen'),

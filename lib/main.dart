@@ -27,6 +27,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'mersail',
+        theme: ThemeData(brightness: Brightness.dark),
         home: FutureBuilder(
           future: _repository.getCurrentUser(),
           builder: (context, AsyncSnapshot<FirebaseUser> snapShot) {
