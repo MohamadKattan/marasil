@@ -41,6 +41,8 @@ dependencies:
   firebase_storage: ^3.1.1
   image:
   provider:
+  cached_network_image:
+  agora_rtc_engine: ^1.0.8
 dev_dependencies:
   flutter_test:
     sdk: flutter

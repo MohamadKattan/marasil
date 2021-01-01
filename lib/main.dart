@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:marasil/provider/image_upload_provider.dart';
+import 'package:marasil/provider/userProvider.dart';
 import 'package:marasil/resources/firebase_repository.dart';
 import 'package:marasil/screens/homeScreen.dart';
 import 'package:marasil/screens/loginScreen.dart';
@@ -26,8 +27,11 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<ImageUploadProvider>(
-      create: (context)=>ImageUploadProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ImageUploadProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+      ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'mersail',

@@ -11,8 +11,10 @@ import 'package:marasil/model/messages.dart';
 import 'package:marasil/model/user.dart';
 import 'package:marasil/provider/image_upload_provider.dart';
 import 'package:marasil/resources/firebase_repository.dart';
+import 'package:marasil/utils/call_utils.dart';
 import 'package:marasil/utils/universal_variables.dart';
 import 'package:marasil/utils/utilities.dart';
+import 'package:marasil/widget/cashed_image.dart';
 import 'package:marasil/widget/customAppBar.dart';
 import 'package:marasil/widget/customTile.dart';
 import 'package:provider/provider.dart';
@@ -99,7 +101,13 @@ class _ChatScreenState extends State<ChatScreen> {
     return CustomAppBar(
         title: Text(widget.receiver.name),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.video_call), onPressed: () {}),
+          IconButton(icon: Icon(Icons.video_call), onPressed: () {
+           CallUtils.dial(
+             from: sender,
+             to: widget.receiver,
+             context: context
+           );
+          }),
           IconButton(icon: Icon(Icons.call), onPressed: () {}),
         ],
         centerTitle: false,
@@ -306,7 +314,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               Flexible(child: ListView(
                 children: [
-                  ModalTile(title: 'Media', icon: Icons.image, subTitle: 'Share Image'),
+                  ModalTile(onTap:()=>pickImage(source: ImageSource.gallery),title: 'Media', icon: Icons.image, subTitle: 'Share Image'),
                   ModalTile(title: 'Video', icon: Icons.image, subTitle: 'Share video'),
                   ModalTile(title: 'connect', icon: Icons.image, subTitle: 'Share connect'),
                 ],
@@ -337,10 +345,12 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // for get message from snap shot
 getMessage(Message message){
-    return Text(
+    // this type 'image 'from upload image in firebase method
+    return message.type!='image'?
+      Text(
       message.message,
       style: TextStyle(color: Colors.white,fontSize: 16),
-    );
+    ):message.photoUrl!=null?CashedImage(url:message.photoUrl):Text('error');
 }
 // this container inCload emoji
   EmojiContainer() {
@@ -382,13 +392,15 @@ getMessage(Message message){
   final String title;
   final String subTitle;
   final IconData icon;
-  ModalTile({@required this.title,@required this.icon,@required this.subTitle});
+  final Function onTap;
+  ModalTile({ this.onTap,@required this.title,@required this.icon,@required this.subTitle});
 
     @override
     Widget build(BuildContext context) {
       return Padding(padding: EdgeInsets.symmetric(horizontal: 15),
         child: CustomTile(
           mini: false,
+          onTap: onTap,
           leading: Container(
             margin: EdgeInsets.only(right: 10),
             decoration: BoxDecoration(
