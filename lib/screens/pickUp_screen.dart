@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:marasil/model/call.dart';
 import 'package:marasil/resources/call_method.dart';
 import 'package:marasil/screens/call_screen.dart';
+import 'package:marasil/utils/premission.dart';
+import 'package:marasil/widget/cashed_image.dart';
 
 class PickUpScreen extends StatelessWidget {
   final Call call;
@@ -25,10 +27,10 @@ class PickUpScreen extends StatelessWidget {
             SizedBox(
               height: 50.0,
             ),
-            Image.network(
-              call.callerPic,
-              height: 150.0,
-              width: 150.0,
+            CashedImage(
+              imageUrl: call.callerPic,
+              isRound: true,
+              radius: 180,
             ),
             SizedBox(
               height: 15.0,
@@ -61,11 +63,12 @@ class PickUpScreen extends StatelessWidget {
                       Icons.call,
                       color: Colors.white,
                     ),
-                    onPressed: () {
+                    onPressed: ()async {
+                    await  Permissions.cameraAndMicrophonePermissionsGranted()?
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
-                            return CallScreen(call: call);
-                          }));
+                        return CallScreen(call: call);
+                      })):{};
                     })
               ],
             ),

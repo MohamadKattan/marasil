@@ -12,6 +12,7 @@ import 'package:marasil/model/user.dart';
 import 'package:marasil/provider/image_upload_provider.dart';
 import 'package:marasil/resources/firebase_repository.dart';
 import 'package:marasil/utils/call_utils.dart';
+import 'package:marasil/utils/premission.dart';
 import 'package:marasil/utils/universal_variables.dart';
 import 'package:marasil/utils/utilities.dart';
 import 'package:marasil/widget/cashed_image.dart';
@@ -101,12 +102,13 @@ class _ChatScreenState extends State<ChatScreen> {
     return CustomAppBar(
         title: Text(widget.receiver.name),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.video_call), onPressed: () {
+          IconButton(icon: Icon(Icons.video_call), onPressed: ()async {
+            await Permissions.cameraAndMicrophonePermissionsGranted()?
            CallUtils.dial(
              from: sender,
              to: widget.receiver,
              context: context
-           );
+           ):{};
           }),
           IconButton(icon: Icon(Icons.call), onPressed: () {}),
         ],
@@ -350,7 +352,7 @@ getMessage(Message message){
       Text(
       message.message,
       style: TextStyle(color: Colors.white,fontSize: 16),
-    ):message.photoUrl!=null?CashedImage(url:message.photoUrl):Text('error');
+    ):message.photoUrl!=null?CashedImage(imageUrl:message.photoUrl,height: 250,width: 250,radius: 10,):Text('error');
 }
 // this container inCload emoji
   EmojiContainer() {
