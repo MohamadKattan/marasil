@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:marasil/enum/userState.dart';
 import 'package:marasil/model/contact.dart';
 import 'package:marasil/model/messages.dart';
 import 'package:marasil/model/user.dart';
@@ -43,7 +44,7 @@ class FirebaseMethods {
     return User.fromMap(documentSnapshot.data);
   }
 
-// for get data and show in ContactView
+// for get datasender and show  to reciver  in ContactView
   Future<User> getUserDetailsById(id) async {
     try {
       DocumentSnapshot documentSnapshot =
@@ -101,10 +102,14 @@ class FirebaseMethods {
 
 
   // this mwthod for signOut
-  Future<void> signOut() async {
-    await _googleSignIn.disconnect();
-    await _googleSignIn.signIn();
-    return await _auth.signOut();
+  Future<bool> signOut() async {
+    try{
+      await _googleSignIn.signOut();
+      await _auth.signOut();
+      return true;
+    }catch(ex){
+      return false;
+    }
   }
 
 //this method for result search ALL users from firebase
@@ -120,7 +125,21 @@ class FirebaseMethods {
     return userList;
   }
 
+//* this method for update UserState  if on line or not
+ void setUserState({@required String userId,UserState userState}){
+    try{    int stateNum = Utils.stateToNum(userState);
+    _userCollection.document(userId).updateData({
+      'state':stateNum,
+    });}catch(ex){print(ex.toString());}
 
+
+ }
+
+//*this method for got currentUpdate for userState
+ Stream <DocumentSnapshot>getUserStream({@required String uid })=>
+ _userCollection.document(uid).snapshots();
+
+//*****************************************************
 // this method for add messages to data base*****
   Future<void> addMessageToDb(
       Message message, User sender, User receiver) async {
@@ -139,15 +158,21 @@ class FirebaseMethods {
         .add(map);
   }
 
+
+
 //** this method it will work with this method (addMessageToDb) for set or get data contact if new or old
   addToContact({String senderId,String receiverId }) async{
     Timestamp currentTime = Timestamp.now();
     await addToSendersContact(senderId, receiverId, currentTime);
     await addToReceiverContact(senderId, receiverId, currentTime);
   }
+
+
   //** this method for preper collection for set and get contact
   DocumentReference getContactDocument({String of,String forContact })=>
   _userCollection.document(of).collection('contact').document(forContact);
+
+
   //** this method if sendrer send a message and receiver is new for add receive data to contect sender
 Future<void>addToSendersContact(String senderId,String receiverId,currentTime )async{
   // for check if found data recever befor or it is new
@@ -164,6 +189,8 @@ Future<void>addToSendersContact(String senderId,String receiverId,currentTime )a
     .setData(receiverMap);
   }
 }
+
+
   //** this method if receiver got a message and sender is new for add sender data to contect receiver
   Future<void>addToReceiverContact(String senderId,String receiverId,currentTime )async{
     // for check if found data sender befor or it is new
@@ -180,9 +207,13 @@ Future<void>addToSendersContact(String senderId,String receiverId,currentTime )a
           .setData(senderrMap);
     }
   }
- //**for get sender and show in chatlsit
+
+
+ //**for get data sender for start useing  to show in chatlsit
   Stream<QuerySnapshot>fetchContacts({String userId})=>
   _userCollection.document(userId).collection('contact').snapshots();
+
+
   //** this method for take last message from sender and show to reciver in chat_list
 Stream<QuerySnapshot>fetchLastMessageBetween({@required String senderId,@required String receiverId })=>
 _messageCollection.document(senderId).collection(receiverId).orderBy('timestamp').snapshots();

@@ -1,4 +1,4 @@
-// this class for provider listing what it will change in state 
+// this class conect with image_upload_provider
 enum ViewState{
   LOADING,
   IDLE

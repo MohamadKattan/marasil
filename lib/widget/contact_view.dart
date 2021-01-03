@@ -8,6 +8,8 @@ import 'package:marasil/screens/chatScreen.dart';
 import 'package:marasil/utils/universal_variables.dart';
 import 'package:marasil/widget/cashed_image.dart';
 import 'package:marasil/widget/customTile.dart';
+import 'package:marasil/widget/lastMessage.dart';
+import 'package:marasil/widget/online_dot_indoctor.dart';
 import 'package:provider/provider.dart';
 
 class ContactView extends StatelessWidget {
@@ -46,45 +48,37 @@ class ViewLayout extends StatelessWidget {
     return CustomTile(
       mini: false,
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context){return
-          ChatScreen(
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return ChatScreen(
             receiver: contact,
           );
         }));
       },
       title: Text(
-       contact.name,
+        contact.name,
         style: TextStyle(color: Colors.white, fontSize: 16.0),
       ),
-      subtitle: Text(
-        'hello',
-        style: TextStyle(color: Colors.grey, fontSize: 14.0),
+      subtitle: LastMessageContainer(
+        stream: _firebaseMethods.fetchLastMessageBetween(
+            senderId: userProvider.getUser.uid, receiverId: contact.uid),
       ),
       leading: Container(
         constraints: BoxConstraints(maxHeight: 60, maxWidth: 60),
         child: Stack(
           children: [
-         CashedImage(
-           imageUrl: contact.profilePhoto,
-           radius: 80,
-           isRound: true,
-         ),
+            CashedImage(
+              imageUrl: contact.profilePhoto,
+              radius: 80,
+              isRound: true,
+            ),
             Align(
-              alignment: Alignment.bottomRight,
-              child: Container(
-                height: 30.0,
-                width: 30.0,
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: UniversalVariables.onlineDotColor,
-                    border: Border.all(
-                        color: UniversalVariables.blackColor, width: 2)),
-              ),
-            )
+                alignment: Alignment.bottomRight,
+                child: OnlineDot(
+                  uid: contact.uid,
+                ))
           ],
         ),
       ),
     );
   }
 }
-
