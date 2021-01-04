@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:marasil/enum/userState.dart';
 import 'package:marasil/pageView/chat_List_screen.dart';
+import 'package:marasil/pageView/lof_screen.dart';
 import 'package:marasil/provider/userProvider.dart';
 import 'package:marasil/resources/firebase_method.dart';
 import 'package:marasil/resources/firebase_repository.dart';
@@ -93,15 +94,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             Container(
               child: ChatListScreen(),
             ),
-            Center(
-              child: FlatButton(
-                  onPressed: () async {
-                    await _repository.signOut();
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-
-                  },
-                  child: Text('callScreen')),
+            Container(
+              child: LogScreen(),
             ),
             Center(
               child: Text('contactScreen'),

@@ -43,6 +43,10 @@ dependencies:
   provider:
   cached_network_image:
   agora_rtc_engine: ^1.0.8
+  path:
+  intl:
+  sqflite:
+  hive:
 dev_dependencies:
   flutter_test:
     sdk: flutter

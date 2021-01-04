@@ -5,11 +5,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as Im;
+import 'package:intl/intl.dart';
 import 'package:marasil/enum/userState.dart';
-import 'package:marasil/provider/image_upload_provider.dart';
 import 'package:path_provider/path_provider.dart';
-class Utils {
 
+class Utils {
   // this class for great sing and make username uniq for search User
   static String getUsername(String email) {
     return 'live${email.split('@'[0])}';
@@ -26,27 +26,30 @@ class Utils {
   }
 
 // this method conected with method in chat screen for send an image
-  static Future <File> pickImage({@required ImageSource source})async {
+  static Future<File> pickImage({@required ImageSource source}) async {
     File selectedImage = await ImagePicker.pickImage(source: source);
     return compreesImage(selectedImage);
   }
 
   // this method for compress thie image after pick and befor upload
-  static Future<File>compreesImage(File imageToCompress)async {
-    final tempDir=await getTemporaryDirectory();
-    final path =  tempDir.path;
+  static Future<File> compreesImage(File imageToCompress) async {
+    final tempDir = await getTemporaryDirectory();
+    final path = tempDir.path;
     int random = Random().nextInt(1000);
     Im.Image image = Im.decodeImage(imageToCompress.readAsBytesSync());
-    Im.copyResize(image,width: 500,height: 500,);
+    Im.copyResize(
+      image,
+      width: 500,
+      height: 500,
+    );
 
     return new File('$path/img_$random.jpg')
-        ..writeAsBytesSync(Im.encodeJpg(image,quality: 85));
-
+      ..writeAsBytesSync(Im.encodeJpg(image, quality: 85));
   }
 
   // this metho for switch Userstate from String to number using for of or on line
-  static int stateToNum(UserState userState){
-    switch (userState){
+  static int stateToNum(UserState userState) {
+    switch (userState) {
       case UserState.offline:
         return 0;
 
@@ -55,21 +58,27 @@ class Utils {
 
       default:
         return 2;
-     }
-   }
+    }
+  }
 
   //  this for reback UserState from num to String
-  static UserState numToState(int number){
-    switch (number){
+  static UserState numToState(int number) {
+    switch (number) {
       case 0:
         return UserState.offline;
 
       case 1:
-         return UserState.onLine;
+        return UserState.onLine;
 
       default:
         return UserState.waiting;
-     }
-   }
+    }
+  }
 
- }
+  // this method for format time im sqldatbase
+  static String formatDateSTRING(String dateString) {
+    DateTime dateTime = DateTime.parse(dateString);
+    var formatter = DateFormat('dd/MM/yy');
+    return formatter.format(dateTime);
+  }
+}
