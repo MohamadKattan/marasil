@@ -2,6 +2,8 @@
 import 'package:marasil/model/log.dart';
 
 abstract class LogInterface {
+  opendb(dbName);
+
   init();
 
   addLogs(Log log);

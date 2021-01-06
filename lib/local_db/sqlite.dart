@@ -11,9 +11,7 @@ import 'package:sqflite/sqflite.dart';
 class SqliteMethod implements LogInterface{
 
   Database _db;
-
-  String databaseName = "LogDB";
-
+  String databaseName = "";
   String tableName = "Call_Logs";
 
   // columns will use for got data by Future<List<Log>> getLogs()
@@ -63,7 +61,7 @@ class SqliteMethod implements LogInterface{
   deleteLogs(int logId) async {
     var dbClient = await db;
     return await dbClient
-        .delete(tableName, where: '$id = ?', whereArgs: [logId]);
+        .delete(tableName, where: '$id = ?', whereArgs: [logId+1]);
   }
 
   updateLogs(Log log) async {
@@ -116,4 +114,9 @@ class SqliteMethod implements LogInterface{
     var dbClient = await db;
     dbClient.close();
   }
+// this for don't mix between database Users
+  @override
+  opendb(dbName)=>(   databaseName = dbName);
+
+
 }

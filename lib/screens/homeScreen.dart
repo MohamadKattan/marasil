@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:marasil/enum/userState.dart';
+import 'package:marasil/local_db/log_repository.dart';
 import 'package:marasil/pageView/chat_List_screen.dart';
 import 'package:marasil/pageView/lof_screen.dart';
 import 'package:marasil/provider/userProvider.dart';
@@ -30,12 +31,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     pageController = PageController();
 
-    SchedulerBinding.instance.addPostFrameCallback((_) async{
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
       userProvider = Provider.of<UserProvider>(context, listen: false);
-       await userProvider.refreashUser();
+      await userProvider.refreashUser();
 // **this with  WidgetsBindingObserver conected with dotOnline for listing
       _firebaseMethods.setUserState(
           userId: userProvider.getUser.uid, userState: UserState.onLine);
+      // for using Hove database
+      LogRepository.init(isHive: true, dbName: userProvider.getUser.uid);
     });
     //** this with  WidgetsBindingObserver conected with dotOnline for listing
     WidgetsBinding.instance.addObserver(this);
@@ -47,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // **this with  WidgetsBindingObserver conected with dotOnline for listing
     WidgetsBinding.instance.removeObserver(this);
   }
+
 //** this with  WidgetsBindingObserver conected with dotOnline for listing
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
