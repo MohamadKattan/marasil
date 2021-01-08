@@ -63,16 +63,17 @@ class ViewLayout extends StatelessWidget {
             senderId: userProvider.getUser.uid, receiverId: contact.uid),
       ),
       leading: Container(
+        decoration: BoxDecoration(shape: BoxShape.circle),
         constraints: BoxConstraints(maxHeight: 60, maxWidth: 60),
         child: Stack(
           children: [
             CashedImage(
               imageUrl: contact.profilePhoto,
-              radius: 80,
+              radius: 60,
               isRound: true,
             ),
             Align(
-                alignment: Alignment.bottomRight,
+                alignment: Alignment.topRight,
                 child: OnlineDot(
                   uid: contact.uid,
                 ))

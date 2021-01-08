@@ -1,4 +1,5 @@
 //this class will include all scours method code to firebase
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -93,6 +94,7 @@ class FirebaseMethods {
       name: currentUser.displayName,
       profilePhoto: currentUser.photoUrl,
       username: username,
+      chattingWith: null,
     );
     firestore
         .collection('users')

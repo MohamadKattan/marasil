@@ -7,6 +7,7 @@ class User {
   String status;
   int state;
   String profilePhoto;
+  String chattingWith;
   User(
       {this.uid,
       this.name,
@@ -14,7 +15,7 @@ class User {
       this.username,
       this.status,
       this.state,
-      this.profilePhoto});
+      this.profilePhoto,this.chattingWith});
   // this map for set
   Map toMap(User user) {
     var data = Map<String, dynamic>();
@@ -24,6 +25,7 @@ class User {
     data['username'] = user.username;
     data['status'] = user.status;
     data['state'] = user.state;
+    data['chattingWith'] = this.chattingWith;
     data['profilePhoto'] = user.profilePhoto;
     return data;
   }
@@ -36,6 +38,7 @@ class User {
     this.username = mapData['username'];
     this.status = mapData['status'];
     this.state = mapData['state'];
+    this.chattingWith = mapData['chattingWith'];
     this.profilePhoto = mapData['profilePhoto'];
   }
 }

@@ -1,6 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:marasil/enum/userState.dart';
 import 'package:marasil/local_db/log_repository.dart';
 import 'package:marasil/pageView/chat_List_screen.dart';
@@ -24,11 +30,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   PageController pageController;
   int _page = 0;
   UserProvider userProvider;
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  FirebaseMessaging firebaseMessaging = FirebaseMessaging();
 
   @override
   void initState() {
     super.initState();
-
+    registerNotification();
+    // configLocalNotification();
     pageController = PageController();
 
     SchedulerBinding.instance.addPostFrameCallback((_) async {
@@ -180,5 +191,71 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _page = page;
     });
     pageController.jumpToPage(page);
+  }
+
+  void registerNotification() {
+    firebaseMessaging.requestNotificationPermissions();
+
+    firebaseMessaging.configure(onMessage: (Map<String, dynamic> message) {
+      print('onMessage: $message');
+      Platform.isAndroid
+          ? showNotification(message['notification'])
+          : showNotification(message['aps']['alert']);
+      return;
+    }, onResume: (Map<String, dynamic> message) {
+      print('onResume: $message');
+      return;
+    }, onLaunch: (Map<String, dynamic> message) {
+      print('onLaunch: $message');
+      return;
+    });
+
+    firebaseMessaging.getToken().then((token) {
+      print('token: $token');
+      Firestore.instance
+          .collection('users')
+          .document(userProvider.getUser.uid)
+          .updateData({'pushToken': token});
+    }).catchError((err) {
+      print(err.toString());
+    });
+  }
+
+  // void configLocalNotification() {
+  //   var initializationSettingsAndroid =
+  //       new AndroidInitializationSettings('marasil');
+  //   var initializationSettingsIOS = new IOSInitializationSettings();
+  //   var initializationSettings = new InitializationSettings(
+  //       android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+  //   flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  // }
+
+  void showNotification(message) async {
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+      Platform.isAndroid
+          ? 'com.kattansoftware.marasil'
+          : 'com.kattansoftware.marasil',
+      'Flutter chat demo',
+      'your channel description',
+      playSound: true,
+      enableVibration: true,
+      importance: Importance.max,
+    );
+    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+    var platformChannelSpecifics = new NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+        iOS: iOSPlatformChannelSpecifics);
+
+    print(message);
+//    print(message['body'].toString());
+//    print(json.encode(message));
+
+    await flutterLocalNotificationsPlugin.show(0, message['title'].toString(),
+        message['body'].toString(), platformChannelSpecifics,
+        payload: json.encode(message));
+
+//    await flutterLocalNotificationsPlugin.show(
+//        0, 'plain title', 'plain body', platformChannelSpecifics,
+//        payload: 'item x');
   }
 }

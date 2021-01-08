@@ -36,7 +36,8 @@ class _MyAppState extends State<MyApp> {
           debugShowCheckedModeBanner: false,
           title: 'mersail',
           theme: ThemeData(brightness: Brightness.dark),
-          home: FutureBuilder(
+          home:
+          FutureBuilder(
             future: _repository.getCurrentUser(),
             builder: (context, AsyncSnapshot<FirebaseUser> snapShot) {
               if (snapShot.hasData) {
@@ -45,7 +46,8 @@ class _MyAppState extends State<MyApp> {
                 return LoginScreen();
               }
             },
-          )),
+          )
+      ),
     );
   }
 }

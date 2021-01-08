@@ -68,7 +68,7 @@ class _listLogContainerState extends State<listLogContainer> {
                 });
           }
         }
-        return Text('History call is empty ');
+        return Center(child: Text('History call is empty '));
       },
     );
   }
