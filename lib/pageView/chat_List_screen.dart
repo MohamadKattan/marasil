@@ -1,16 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:marasil/model/contact.dart';
-import 'package:marasil/model/user.dart';
 import 'package:marasil/pageView/search_screen.dart';
 import 'package:marasil/provider/userProvider.dart';
 import 'package:marasil/resources/firebase_method.dart';
 import 'package:marasil/resources/firebase_repository.dart';
 import 'package:marasil/utils/universal_variables.dart';
-import 'package:marasil/utils/utilities.dart';
 import 'package:marasil/widget/contact_view.dart';
 import 'package:marasil/widget/customAppBar.dart';
-import 'package:marasil/widget/customTile.dart';
 import 'package:marasil/widget/newChatButtom.dart';
 import 'package:marasil/widget/quiet_box.dart';
 import 'package:marasil/widget/userCircle.dart';

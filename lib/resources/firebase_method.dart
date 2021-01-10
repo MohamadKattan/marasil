@@ -1,7 +1,6 @@
 //this class will include all scours method code to firebase
-import 'dart:ffi';
-import 'dart:io';
 
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -13,6 +12,7 @@ import 'package:marasil/model/messages.dart';
 import 'package:marasil/model/user.dart';
 import 'package:marasil/provider/image_upload_provider.dart';
 import 'package:marasil/utils/utilities.dart';
+import 'package:uuid/uuid.dart';
 
 class FirebaseMethods {
   // for install all labrly from Auth
@@ -24,12 +24,14 @@ class FirebaseMethods {
 
   User user = User();
 
+  String id = Uuid().v4();
+
   StorageReference _storageReference;
 
-  static final CollectionReference _userCollection = firestore.collection('users');
-  static final CollectionReference _messageCollection = firestore.collection('messages');
-
-
+  static final CollectionReference _userCollection =
+      firestore.collection('users');
+  static final CollectionReference _messageCollection =
+      firestore.collection('messages');
 
   // this method for got currentUser from Auth
   Future<FirebaseUser> getCurrentUser() async {
@@ -39,9 +41,10 @@ class FirebaseMethods {
   }
 
   // this method for get user id from crurrentuser=>UserProvider
-  Future <User>getUserDetails()async{
-    FirebaseUser currentUser= await getCurrentUser();
-    DocumentSnapshot documentSnapshot = await _userCollection.document(currentUser.uid).get();
+  Future<User> getUserDetails() async {
+    FirebaseUser currentUser = await getCurrentUser();
+    DocumentSnapshot documentSnapshot =
+        await _userCollection.document(currentUser.uid).get();
     return User.fromMap(documentSnapshot.data);
   }
 
@@ -49,7 +52,7 @@ class FirebaseMethods {
   Future<User> getUserDetailsById(id) async {
     try {
       DocumentSnapshot documentSnapshot =
-      await _userCollection.document(id).get();
+          await _userCollection.document(id).get();
       return User.fromMap(documentSnapshot.data);
     } catch (e) {
       print(e);
@@ -70,7 +73,6 @@ class FirebaseMethods {
     return user;
   }
 
-
   // this method for receiver firebase user
   Future<bool> autnehticateUser(FirebaseUser user) async {
     QuerySnapshot result = await firestore
@@ -83,7 +85,6 @@ class FirebaseMethods {
     // if user is registerd it data length of list> 0 == false or == 0 == true
     return docs.length == 0 ? true : false;
   }
-
 
   // this method for set dat to firebase and all veribel it will be im model = user
   Future<void> addDataToDb(FirebaseUser currentUser) async {
@@ -102,14 +103,13 @@ class FirebaseMethods {
         .setData(user.toMap(user));
   }
 
-
   // this mwthod for signOut
   Future<bool> signOut() async {
-    try{
+    try {
       await _googleSignIn.signOut();
       await _auth.signOut();
       return true;
-    }catch(ex){
+    } catch (ex) {
       return false;
     }
   }
@@ -128,18 +128,20 @@ class FirebaseMethods {
   }
 
 //* this method for update UserState  if on line or not
- void setUserState({@required String userId,UserState userState}){
-    try{    int stateNum = Utils.stateToNum(userState);
-    _userCollection.document(userId).updateData({
-      'state':stateNum,
-    });}catch(ex){print(ex.toString());}
-
-
- }
+  void setUserState({@required String userId, UserState userState}) {
+    try {
+      int stateNum = Utils.stateToNum(userState);
+      _userCollection.document(userId).updateData({
+        'state': stateNum,
+      });
+    } catch (ex) {
+      print(ex.toString());
+    }
+  }
 
 //*this method for got currentUpdate for userState
- Stream <DocumentSnapshot>getUserStream({@required String uid })=>
- _userCollection.document(uid).snapshots();
+  Stream<DocumentSnapshot> getUserStream({@required String uid}) =>
+      _userCollection.document(uid).snapshots();
 
 //*****************************************************
 // this method for add messages to data base*****
@@ -152,7 +154,7 @@ class FirebaseMethods {
         .collection(message.receiverId)
         .add(map);
 
-    addToContact(senderId:message.senderId,receiverId:message.receiverId);
+    addToContact(senderId: message.senderId, receiverId: message.receiverId);
 
     await _messageCollection
         .document(message.receiverId)
@@ -160,67 +162,65 @@ class FirebaseMethods {
         .add(map);
   }
 
-
-
 //** this method it will work with this method (addMessageToDb) for set or get data contact if new or old
-  addToContact({String senderId,String receiverId }) async{
+  addToContact({String senderId, String receiverId}) async {
     Timestamp currentTime = Timestamp.now();
     await addToSendersContact(senderId, receiverId, currentTime);
     await addToReceiverContact(senderId, receiverId, currentTime);
   }
 
-
   //** this method for preper collection for set and get contact
-  DocumentReference getContactDocument({String of,String forContact })=>
-  _userCollection.document(of).collection('contact').document(forContact);
-
+  DocumentReference getContactDocument({String of, String forContact}) =>
+      _userCollection.document(of).collection('contact').document(forContact);
 
   //** this method if sendrer send a message and receiver is new for add receive data to contect sender
-Future<void>addToSendersContact(String senderId,String receiverId,currentTime )async{
-  // for check if found data recever befor or it is new
-  DocumentSnapshot  senderSnapshot =
-  await getContactDocument(of: senderId,forContact: receiverId).get();
-  if(!senderSnapshot.exists){
-    Contact receiverContact = Contact(
-      uid: receiverId,
-      addedOn: currentTime,
-    );
-    // if No found data will start set to colloction by map
-    var receiverMap = receiverContact.toMap(receiverContact);
-    await getContactDocument(of: senderId,forContact: receiverId)
-    .setData(receiverMap);
+  Future<void> addToSendersContact(
+      String senderId, String receiverId, currentTime) async {
+    // for check if found data recever befor or it is new
+    DocumentSnapshot senderSnapshot =
+        await getContactDocument(of: senderId, forContact: receiverId).get();
+    if (!senderSnapshot.exists) {
+      Contact receiverContact = Contact(
+        uid: receiverId,
+        addedOn: currentTime,
+      );
+      // if No found data will start set to colloction by map
+      var receiverMap = receiverContact.toMap(receiverContact);
+      await getContactDocument(of: senderId, forContact: receiverId)
+          .setData(receiverMap);
+    }
   }
-}
-
 
   //** this method if receiver got a message and sender is new for add sender data to contect receiver
-  Future<void>addToReceiverContact(String senderId,String receiverId,currentTime )async{
+  Future<void> addToReceiverContact(
+      String senderId, String receiverId, currentTime) async {
     // for check if found data sender befor or it is new
-    DocumentSnapshot  receiverSnapshot =
-    await getContactDocument(of: receiverId,forContact: senderId).get();
-    if(!receiverSnapshot.exists){
+    DocumentSnapshot receiverSnapshot =
+        await getContactDocument(of: receiverId, forContact: senderId).get();
+    if (!receiverSnapshot.exists) {
       Contact senderContactContact = Contact(
         uid: senderId,
         addedOn: currentTime,
       );
       // if No found data will start set to colloction by map
       var senderrMap = senderContactContact.toMap(senderContactContact);
-      await getContactDocument(of: receiverId,forContact: senderId)
+      await getContactDocument(of: receiverId, forContact: senderId)
           .setData(senderrMap);
     }
   }
 
-
- //**for get data sender for start useing  to show in chatlsit
-  Stream<QuerySnapshot>fetchContacts({String userId})=>
-  _userCollection.document(userId).collection('contact').snapshots();
-
+  //**for get data sender for start useing  to show in chatlsit
+  Stream<QuerySnapshot> fetchContacts({String userId}) =>
+      _userCollection.document(userId).collection('contact').snapshots();
 
   //** this method for take last message from sender and show to reciver in chat_list
-Stream<QuerySnapshot>fetchLastMessageBetween({@required String senderId,@required String receiverId })=>
-_messageCollection.document(senderId).collection(receiverId).orderBy('timestamp').snapshots();
-
-
+  Stream<QuerySnapshot> fetchLastMessageBetween(
+          {@required String senderId, @required String receiverId}) =>
+      _messageCollection
+          .document(senderId)
+          .collection(receiverId)
+          .orderBy('timestamp')
+          .snapshots();
 
   // this method for upload image to storage
   Future<String> uploadImageToStorage(File image) async {
@@ -237,33 +237,62 @@ _messageCollection.document(senderId).collection(receiverId).orderBy('timestamp'
   }
 
 // this method for uploadIma=ge to fire store
-  void setImageMsg(String url, String senderId, String receiverId) async {
+  void setImageMsg(
+      String url, String senderId, String receiverId, String messageId) async {
     Message _message;
     _message = Message.imageMessage(
-      message: 'IMAGE',
-      receiverId: receiverId,
-      senderId: senderId,
-      photoUrl: url,
-      type: 'image',
-      timestamp: Timestamp.now(),
-    );
+        message: 'IMAGE',
+        receiverId: receiverId,
+        senderId: senderId,
+        photoUrl: url,
+        type: 'image',
+        timestamp: Timestamp.now(),
+        messageId: messageId);
     var map = _message.toImageMap();
-    await _messageCollection
+    await firestore
+        .collection('messages')
         .document(_message.senderId)
         .collection(_message.receiverId)
-        .add(map);
+        .document(_message.messageId)
+        .setData(map);
 
     await _messageCollection
         .document(_message.receiverId)
         .collection(_message.senderId)
-        .add(map);
+        .document(_message.messageId)
+        .setData(map);
   }
 
-  uploadImage(File image, String receiverId, String senderId, ImageUploadProvider imageProvide) async {
+  uploadImage(File image, String receiverId, String senderId, String messageId,
+      ImageUploadProvider imageProvide) async {
     imageProvide.setToLoading();
-    String url = await uploadImageToStorage(image);
+    String url = await uploadImageToStorage(image); //to Stroage
     imageProvide.setToIdle();
-    setImageMsg(url, senderId, receiverId);
+    setImageMsg(url, senderId, receiverId, messageId); //tofirestore
   }
 
+  deleteImage(String receiverId, String senderId, String messageId) async {
+
+    Message Dmessage = Message();
+    _messageCollection
+        .document(Dmessage.senderId)
+        .collection(Dmessage.receiverId)
+        .document(Dmessage.messageId)
+        .get()
+        .then((document) {
+      if (document.exists) {
+        document.reference.delete();
+      }
+    });
+    await  _messageCollection
+        .document(Dmessage.receiverId)
+        .collection(Dmessage.senderId)
+        .document(Dmessage.messageId)
+        .get()
+        .then((document) {
+      if (document.exists) {
+        document.reference.delete();
+      }
+    });
+  }
 }

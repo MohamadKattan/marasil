@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker/emoji_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:uuid/uuid.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -25,13 +25,16 @@ import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
   final User receiver;
-  ChatScreen({this.receiver});
+  final String messageId;
+  ChatScreen({
+    this.receiver,this.messageId
+  });
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  FirebaseMethods _firebaseMethods=FirebaseMethods();
+  FirebaseMethods _firebaseMethods = FirebaseMethods();
   FirebaseRepository _repository = FirebaseRepository();
   TextEditingController chatEditingController = TextEditingController();
   ScrollController _scrollController = ScrollController();
@@ -44,6 +47,7 @@ class _ChatScreenState extends State<ChatScreen> {
   // for show container emoji
   bool showEmojiPicker = false;
   String _currentUser;
+  String messageId = Uuid().v4();
   //for call
   ImageUploadProvider _imageUploadProvider;
   @override
@@ -62,6 +66,10 @@ class _ChatScreenState extends State<ChatScreen> {
             .collection('users')
             .document(_currentUser)
             .updateData({'chattingWith': widget.receiver.uid});
+
+       String  id =  messageId = Uuid().v4();
+
+
       });
     });
   }
@@ -411,13 +419,14 @@ class _ChatScreenState extends State<ChatScreen> {
                         builder: (context) => FullPhoto(
                               url: message.photoUrl,
                             ))),
+                onLongPress: () => controlDeletePost(context),
                 child: CashedImage(
                   imageUrl: message.photoUrl,
                   height: 250,
                   width: 250,
                   radius: 10,
                 ),
-               )
+              )
             : Text('error');
   }
 
@@ -444,16 +453,63 @@ class _ChatScreenState extends State<ChatScreen> {
 //this method for pick image from cammer
   pickImage({@required ImageSource source}) async {
     File selectedImage = await Utils.pickImage(source: source);
+
     _repository.uploadImage(
       image: selectedImage,
       receiverId: widget.receiver.uid,
       senderId: _currentUser,
       imageProvide: _imageUploadProvider,
+      messageId: messageId,
     );
   }
+
+  controlDeletePost(BuildContext mcontext) {
+    return showDialog(
+        context: mcontext,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text(
+              'What do you want to do ?',
+              style: TextStyle(color: Colors.white),
+            ),
+            children: [
+              SimpleDialogOption(
+                child: Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.white, fontSize: 16.0),
+                ),
+                onPressed: () async{
+                  Navigator.pop(context);
+                  deleteImage();
+                },
+              ),
+              SimpleDialogOption(
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.white, fontSize: 16.0),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  void deleteImage() {
+
+    _repository.deleteImage(
+      receiverId: widget.receiver.uid,
+      senderId: _currentUser,
+      messageId: messageId,
+    );
+  }
+
 }
 
-// this class for creat item in tools List View
+// this class for creat item in toolsButton List View
 class ModalTile extends StatelessWidget {
   final String title;
   final String subTitle;

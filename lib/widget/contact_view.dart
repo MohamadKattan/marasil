@@ -5,7 +5,6 @@ import 'package:marasil/provider/userProvider.dart';
 import 'package:marasil/resources/firebase_method.dart';
 import 'package:marasil/resources/firebase_repository.dart';
 import 'package:marasil/screens/chatScreen.dart';
-import 'package:marasil/utils/universal_variables.dart';
 import 'package:marasil/widget/cashed_image.dart';
 import 'package:marasil/widget/customTile.dart';
 import 'package:marasil/widget/lastMessage.dart';

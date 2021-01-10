@@ -1,29 +1,29 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uuid/uuid.dart';
 
 class Message {
   String senderId;
   String receiverId;
+  String messageId;
   String type;
   String message;
   String photoUrl;
   Timestamp timestamp;
-  String content;
   Message(
       {this.senderId,
       this.receiverId,
       this.type,
       this.message,
-      this.timestamp,this.content});
+      this.timestamp,this.messageId});
 
   // will use just when send an image with text
   Message.imageMessage(
       {this.senderId,
-        this.content,
       this.receiverId,
       this.type,
       this.message,
       this.timestamp,
-      this.photoUrl});
+      this.photoUrl,this.messageId});
   // this for set
   Map toMap() {
     var map = Map<String, dynamic>();
@@ -32,7 +32,7 @@ class Message {
     map['type'] = this.type;
     map['message'] = this.message;
     map['photoUrl'] = this.photoUrl;
-    map['content'] = this.content;
+    map['messageId'] = this.messageId;
     map['timestamp'] = this.timestamp;
     return map;
   }
@@ -45,7 +45,8 @@ class Message {
     map['message'] = this.message;
     map['photoUrl'] = this.photoUrl;
     map['timestamp'] = this.timestamp;
-    map['content'] = this.content;
+    map['messageId'] = this.messageId;
+
     return map;
   }
 
@@ -59,7 +60,7 @@ class Message {
     this.photoUrl = map['photoUrl'];
     this.photoUrl = map['photoUrl'];
     this.timestamp = map['timestamp'];
-    this.content= map['content'];
+    this.messageId= map['messageId'];
 
   }
 }

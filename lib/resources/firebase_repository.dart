@@ -28,11 +28,16 @@ class FirebaseRepository {
     _firebaseMethods.addMessageToDb(message,sender,receiver);
   }
 
-  void uploadImage({@ required File image,@required String receiverId, @required String senderId,@required ImageUploadProvider imageProvide})
+  void uploadImage({@ required File image,@required String receiverId, @required String senderId,@required ImageUploadProvider imageProvide,@required String messageId})
   =>_firebaseMethods.uploadImage(
-    image,receiverId,senderId,imageProvide
+   image,receiverId,senderId,messageId,imageProvide,
   );
 
   Future <User>getUserDetails()=>_firebaseMethods.getUserDetails();
+
+  void deleteImage({String receiverId, String senderId, String messageId})  =>_firebaseMethods.deleteImage(
+   receiverId,senderId,messageId,
+  );
+
 
 }
