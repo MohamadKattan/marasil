@@ -1,8 +1,6 @@
 // tjis class for show who call and you call in pageview
 
 import 'package:flutter/material.dart';
-import 'package:marasil/local_db/log_repository.dart';
-import 'package:marasil/model/log.dart';
 import 'package:marasil/pageView/search_screen.dart';
 import 'package:marasil/screens/pickUp_layot.dart';
 import 'package:marasil/utils/universal_variables.dart';
@@ -16,6 +14,7 @@ class LogScreen extends StatelessWidget {
       scffold: Scaffold(
         backgroundColor: UniversalVariables.blackColor,
         appBar: AppBar(
+          automaticallyImplyLeading: false,
             title: Text(
               'Calls',
               style: TextStyle(color: Colors.grey, fontSize: 16),
@@ -30,7 +29,7 @@ class LogScreen extends StatelessWidget {
                   onPressed: () => Navigator.push(context,
                       MaterialPageRoute(builder: (context) => SearchScreen())))
             ]),
-        floatingActionButton: CulomnFloatButton(),
+        // floatingActionButton: CulomnFloatButton(),
         body:listLogContainer(),
       ),
     );

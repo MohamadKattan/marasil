@@ -6,7 +6,6 @@ import 'package:marasil/provider/userProvider.dart';
 import 'package:marasil/resources/firebase_method.dart';
 import 'package:marasil/screens/loginScreen.dart';
 import 'package:marasil/widget/cashed_image.dart';
-import 'package:marasil/widget/contact_view.dart';
 import 'package:marasil/widget/customAppBar.dart';
 import 'package:marasil/widget/shimer.dart';
 import 'package:provider/provider.dart';
@@ -62,7 +61,7 @@ class UserDetailsBody extends StatelessWidget {
           CashedImage(
             isRound: true,
             radius: 50,
-            imageUrl: user.profilePhoto,
+            imageUrl: userProvider.getUser.profilePhoto,
           ),
           SizedBox(width: 15),
           Column(

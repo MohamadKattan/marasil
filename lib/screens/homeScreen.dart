@@ -1,16 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart'
+    as locel;
 import 'package:marasil/enum/userState.dart';
 import 'package:marasil/local_db/log_repository.dart';
 import 'package:marasil/pageView/chat_List_screen.dart';
 import 'package:marasil/pageView/lof_screen.dart';
+import 'package:marasil/pageView/settingProfile.dart';
 import 'package:marasil/provider/userProvider.dart';
 import 'package:marasil/resources/firebase_method.dart';
 import 'package:marasil/resources/firebase_repository.dart';
@@ -30,8 +31,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   PageController pageController;
   int _page = 0;
   UserProvider userProvider;
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  final locel.FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      locel.FlutterLocalNotificationsPlugin();
 
   FirebaseMessaging firebaseMessaging = FirebaseMessaging();
 
@@ -39,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     registerNotification();
-    // configLocalNotification();
+    configLocalNotification();
     pageController = PageController();
 
     SchedulerBinding.instance.addPostFrameCallback((_) async {
@@ -112,8 +113,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             Container(
               child: LogScreen(),
             ),
-            Center(
-              child: Text('contactScreen'),
+            Container(
+              child: SittingsScreen(),
             ),
           ],
           controller: pageController,
@@ -132,6 +133,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ? UniversalVariables.lightBlueColor
                         : Colors.grey,
                   ),
+                  // ignore: deprecated_member_use
                   title: Text('Chat',
                       style: TextStyle(
                           fontSize: 10.0,
@@ -156,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
-                    Icons.contact_phone,
+                    Icons.settings,
                     color: (_page == 2)
                         ? UniversalVariables.lightBlueColor
                         : Colors.grey,
@@ -221,34 +223,35 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     });
   }
 
-  // void configLocalNotification() {
-  //   var initializationSettingsAndroid =
-  //       new AndroidInitializationSettings('marasil');
-  //   var initializationSettingsIOS = new IOSInitializationSettings();
-  //   var initializationSettings = new InitializationSettings(
-  //       android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-  //   flutterLocalNotificationsPlugin.initialize(initializationSettings);
-  // }
+  void configLocalNotification() {
+    var initializationSettingsAndroid =
+        new locel.AndroidInitializationSettings('app_icon');
+    var initializationSettingsIOS = new locel.IOSInitializationSettings();
+    var initializationSettings = new locel.InitializationSettings(
+        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
 
   void showNotification(message) async {
-    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+    var androidPlatformChannelSpecifics = new locel.AndroidNotificationDetails(
       Platform.isAndroid
-          ? 'com.kattansoftware.marasil'
-          : 'com.kattansoftware.marasil',
+          ? 'com.dfa.kattansoftware.marasil'
+          : 'com.duytq.kattansoftware.marasil',
       'Flutter chat demo',
       'your channel description',
       playSound: true,
       enableVibration: true,
-      importance: Importance.max,
+      importance: locel.Importance.max,
+      priority: locel.Priority.high,
     );
-    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
-    var platformChannelSpecifics = new NotificationDetails(
+    var iOSPlatformChannelSpecifics = new locel.IOSNotificationDetails();
+    var platformChannelSpecifics = new locel.NotificationDetails(
         android: androidPlatformChannelSpecifics,
         iOS: iOSPlatformChannelSpecifics);
 
     print(message);
-//    print(message['body'].toString());
-//    print(json.encode(message));
+    print(message['body'].toString());
+    print(json.encode(message));
 
     await flutterLocalNotificationsPlugin.show(0, message['title'].toString(),
         message['body'].toString(), platformChannelSpecifics,

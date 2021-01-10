@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker/emoji_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:marasil/enum/view_state.dart';
 import 'package:marasil/model/messages.dart';
 import 'package:marasil/model/user.dart';
 import 'package:marasil/provider/image_upload_provider.dart';
+import 'package:marasil/provider/userProvider.dart';
 import 'package:marasil/resources/firebase_method.dart';
 import 'package:marasil/resources/firebase_repository.dart';
 import 'package:marasil/utils/call_utils.dart';
@@ -18,6 +20,7 @@ import 'package:marasil/utils/utilities.dart';
 import 'package:marasil/widget/cashed_image.dart';
 import 'package:marasil/widget/customAppBar.dart';
 import 'package:marasil/widget/customTile.dart';
+import 'package:marasil/widget/fullImage.dart';
 import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -28,6 +31,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  FirebaseMethods _firebaseMethods=FirebaseMethods();
   FirebaseRepository _repository = FirebaseRepository();
   TextEditingController chatEditingController = TextEditingController();
   ScrollController _scrollController = ScrollController();
@@ -36,6 +40,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool isWritting = false;
   // id sender
   User sender;
+  UserProvider _userProvider;
   // for show container emoji
   bool showEmojiPicker = false;
   String _currentUser;
@@ -80,6 +85,8 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     _imageUploadProvider = Provider.of<ImageUploadProvider>(context);
+    _userProvider = Provider.of<UserProvider>(context);
+
     return Scaffold(
       appBar: customAppBar(context),
       body: Container(
@@ -280,7 +287,9 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
 // this method for sender side messages
-  Widget senderLayout(Message message) {
+  Widget senderLayout(
+    Message message,
+  ) {
     Radius messagesRadius = Radius.circular(10);
     return Container(
       margin: EdgeInsets.only(top: 12),
@@ -395,12 +404,20 @@ class _ChatScreenState extends State<ChatScreen> {
             style: TextStyle(color: Colors.white, fontSize: 16),
           )
         : message.photoUrl != null
-            ? CashedImage(
-                imageUrl: message.photoUrl,
-                height: 250,
-                width: 250,
-                radius: 10,
-              )
+            ? GestureDetector(
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => FullPhoto(
+                              url: message.photoUrl,
+                            ))),
+                child: CashedImage(
+                  imageUrl: message.photoUrl,
+                  height: 250,
+                  width: 250,
+                  radius: 10,
+                ),
+               )
             : Text('error');
   }
 

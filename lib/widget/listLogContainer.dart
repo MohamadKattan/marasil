@@ -43,7 +43,8 @@ class _listLogContainerState extends State<listLogContainer> {
                       icon: getIcon(_log.callStatus),
                       subtitle: Text(Utils.formatDateSTRING(_log.timestamp),
                           style: TextStyle(color: Colors.grey, fontSize: 16)),
-                      onLongPress: () => showDialog(
+                      onLongPress: () =>
+                          showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
                                 title: Text('Delete This log'),

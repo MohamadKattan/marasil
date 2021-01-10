@@ -7,16 +7,18 @@ class Message {
   String message;
   String photoUrl;
   Timestamp timestamp;
+  String content;
   Message(
       {this.senderId,
       this.receiverId,
       this.type,
       this.message,
-      this.timestamp});
+      this.timestamp,this.content});
 
   // will use just when send an image with text
   Message.imageMessage(
       {this.senderId,
+        this.content,
       this.receiverId,
       this.type,
       this.message,
@@ -30,6 +32,7 @@ class Message {
     map['type'] = this.type;
     map['message'] = this.message;
     map['photoUrl'] = this.photoUrl;
+    map['content'] = this.content;
     map['timestamp'] = this.timestamp;
     return map;
   }
@@ -42,6 +45,7 @@ class Message {
     map['message'] = this.message;
     map['photoUrl'] = this.photoUrl;
     map['timestamp'] = this.timestamp;
+    map['content'] = this.content;
     return map;
   }
 
@@ -53,7 +57,9 @@ class Message {
     this.type = map['type'];
     this.message = map['message'];
     this.photoUrl = map['photoUrl'];
+    this.photoUrl = map['photoUrl'];
     this.timestamp = map['timestamp'];
+    this.content= map['content'];
 
   }
 }

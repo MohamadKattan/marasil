@@ -40,7 +40,6 @@ class ContactView extends StatelessWidget {
 class ViewLayout extends StatelessWidget {
   final User contact;
   FirebaseMethods _firebaseMethods = FirebaseMethods();
-  FirebaseRepository _repository = FirebaseRepository();
   ViewLayout({@required this.contact});
   @override
   Widget build(BuildContext context) {
@@ -64,12 +63,12 @@ class ViewLayout extends StatelessWidget {
       ),
       leading: Container(
         decoration: BoxDecoration(shape: BoxShape.circle),
-        constraints: BoxConstraints(maxHeight: 60, maxWidth: 60),
+        constraints: BoxConstraints(maxHeight: 50, maxWidth: 50),
         child: Stack(
           children: [
             CashedImage(
               imageUrl: contact.profilePhoto,
-              radius: 60,
+              radius: 40,
               isRound: true,
             ),
             Align(

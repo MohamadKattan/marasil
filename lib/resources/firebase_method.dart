@@ -266,6 +266,4 @@ _messageCollection.document(senderId).collection(receiverId).orderBy('timestamp'
     setImageMsg(url, senderId, receiverId);
   }
 
-
-
 }
