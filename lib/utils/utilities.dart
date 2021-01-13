@@ -27,8 +27,15 @@ class Utils {
 
 // this method conected with method in chat screen for send an image
   static Future<File> pickImage({@required ImageSource source}) async {
+    // ignore: deprecated_member_use
     File selectedImage = await ImagePicker.pickImage(source: source);
     return compreesImage(selectedImage);
+  }
+
+  static  Future<File>pickVideo({@required ImageSource source})async {
+    // ignore: deprecated_member_use
+    File selectedVideo = await ImagePicker.pickVideo(source: source);
+    return selectedVideo;
   }
 
   // this method for compress thie image after pick and befor upload
@@ -44,7 +51,7 @@ class Utils {
     );
 
     return new File('$path/img_$random.jpg')
-      ..writeAsBytesSync(Im.encodeJpg(image, quality: 85));
+      ..writeAsBytesSync(Im.encodeJpg(image, quality: 60));
   }
 
   // this metho for switch Userstate from String to number using for of or on line
@@ -81,4 +88,6 @@ class Utils {
     var formatter = DateFormat('dd/MM/yy');
     return formatter.format(dateTime);
   }
+
+
 }

@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:marasil/resources/firebase_repository.dart';
@@ -18,11 +17,30 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: UniversalVariables.blackColor,
-      body: Stack(
-        children: [
-          Center(child: loginButton()),
-          isLoginPressed ? Center(child: CircularProgressIndicator()) : Text('')
-        ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                Container(
+                    height: MediaQuery.of(context).size.height*0.96,
+                    width: MediaQuery.of(context).size.width,
+                    child: Image.asset('images/logo.png',fit: BoxFit.fill,)),
+                Center(child: loginButton()),
+                isLoginPressed
+                    ? Center(child: CircularProgressIndicator())
+                    : Text(''),
+                Center(
+                    child: Text(
+                      '..Click..',
+                      style: TextStyle(color: Colors.grey, fontSize: 18),
+                    )),
+              ],
+            ),
+
+          ],
+        ),
       ),
     );
   }
@@ -33,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
       baseColor: Colors.white,
       highlightColor: UniversalVariables.senderColor,
       child: Padding(
-        padding: EdgeInsets.all(35),
+        padding: EdgeInsets.all(20),
         child: FlatButton(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

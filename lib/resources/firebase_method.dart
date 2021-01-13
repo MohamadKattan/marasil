@@ -222,26 +222,37 @@ class FirebaseMethods {
           .orderBy('timestamp')
           .snapshots();
 
-  // this method for upload image to storage
+//*************************End***************************************************
+
+//**********************StartUploadImage******************************************
+//NO1 FOR start upload image to Storage+firestore
+  uploadImage(File image, String receiverId, String senderId, String messageId,
+      ImageUploadProvider imageProvide) async {
+    imageProvide.setToLoading();
+    String url = await uploadImageToStorage(image); //to Stroage
+    imageProvide.setToIdle();
+    setImageMsg(url, senderId, receiverId, messageId); //tofirestore
+  }
+
+  //NO2 this method for upload image to storage
   Future<String> uploadImageToStorage(File image) async {
     try {
       _storageReference =
           FirebaseStorage.instance.ref().child('${DateTime.now()}');
       StorageUploadTask _storageUploadTask = _storageReference.putFile(image);
       var url =
-          await (await _storageUploadTask.onComplete).ref.getDownloadURL();
+      await (await _storageUploadTask.onComplete).ref.getDownloadURL();
       return url;
     } catch (ex) {
       print(ex.toString());
     }
   }
 
-// this method for uploadIma=ge to fire store
+  //NO3 this method for uploadIma=ge to fire store
   void setImageMsg(
       String url, String senderId, String receiverId, String messageId) async {
     Message _message;
     _message = Message.imageMessage(
-        message: 'IMAGE',
         receiverId: receiverId,
         senderId: senderId,
         photoUrl: url,
@@ -262,17 +273,56 @@ class FirebaseMethods {
         .document(_message.messageId)
         .setData(map);
   }
+//**********************************END********************************************
 
-  uploadImage(File image, String receiverId, String senderId, String messageId,
-      ImageUploadProvider imageProvide) async {
+//*****************************StartUploadVideo*************************************
+// no :1 for strat upload to Storage + firestore
+  UploadVideo(File video, String receiverId, String senderId, String messageId,
+      ImageUploadProvider imageProvide)async {
     imageProvide.setToLoading();
-    String url = await uploadImageToStorage(image); //to Stroage
+    String url = await uploadVideoToStorage(video);
     imageProvide.setToIdle();
-    setImageMsg(url, senderId, receiverId, messageId); //tofirestore
+    setVideoMsg(url, senderId, receiverId, messageId); //tofirestore//to Stroage
   }
+//no2 for start upload video to storage
+  Future<String> uploadVideoToStorage(File video)async {
+    try {
+      _storageReference =
+          FirebaseStorage.instance.ref().child('${DateTime.now()}');
+      StorageUploadTask _storageUploadTask = _storageReference.putFile(video);
+      var url =
+      await (await _storageUploadTask.onComplete).ref.getDownloadURL();
+      return url;
+    } catch (ex) {
+      print(ex.toString());
+    }
+  }
+// no3 for upload video to fire store
+  void setVideoMsg(String url, String senderId, String receiverId, String messageId)async {
+    Message message;
+    message = Message.videoMessage(
+        receiverId: receiverId,
+        senderId: senderId,
+        video: url,
+        type: 'video',
+        timestamp: Timestamp.now(),
+        messageId: messageId);
+    var map = message.toVideoeMap();
+    await firestore
+        .collection('messages')
+        .document(message.senderId)
+        .collection(message.receiverId)
+        .document(message.messageId)
+        .setData(map);
 
+    await _messageCollection
+        .document(message.receiverId)
+        .collection(message.senderId)
+        .document(message.messageId)
+        .setData(map);
+  }
+//*********************************END***********************************************
   deleteImage(String receiverId, String senderId, String messageId) async {
-
     Message Dmessage = Message();
     _messageCollection
         .document(Dmessage.senderId)
@@ -284,7 +334,7 @@ class FirebaseMethods {
         document.reference.delete();
       }
     });
-    await  _messageCollection
+    await _messageCollection
         .document(Dmessage.receiverId)
         .collection(Dmessage.senderId)
         .document(Dmessage.messageId)
@@ -295,4 +345,5 @@ class FirebaseMethods {
       }
     });
   }
+
 }

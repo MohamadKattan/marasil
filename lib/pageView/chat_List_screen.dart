@@ -5,6 +5,7 @@ import 'package:marasil/pageView/search_screen.dart';
 import 'package:marasil/provider/userProvider.dart';
 import 'package:marasil/resources/firebase_method.dart';
 import 'package:marasil/resources/firebase_repository.dart';
+import 'package:marasil/screens/loginScreen.dart';
 import 'package:marasil/utils/universal_variables.dart';
 import 'package:marasil/widget/contact_view.dart';
 import 'package:marasil/widget/customAppBar.dart';
@@ -19,13 +20,7 @@ class ChatListScreen extends StatelessWidget {
 // this method for customApp
   CustomAppBar customAppBar(BuildContext context) {
     return CustomAppBar(
-      leading: IconButton(
-        icon: Icon(
-          Icons.notifications,
-          color: Colors.white,
-        ),
-        onPressed: () {},
-      ),
+
       title: UserCircle(),
       centerTitle: true,
       actions: [
@@ -41,10 +36,12 @@ class ChatListScreen extends StatelessWidget {
         ),
         IconButton(
           icon: Icon(
-            Icons.more_vert,
+            Icons.exit_to_app_outlined,
             color: Colors.white,
           ),
-          onPressed: () {},
+          onPressed: () {
+            signOut(context);
+          },
         ),
       ],
     );
@@ -58,6 +55,15 @@ class ChatListScreen extends StatelessWidget {
       floatingActionButton: newChatButtom(),
       body: chatListContainer(),
     );
+  }
+  void signOut(BuildContext context) async {
+    bool isLogOut = await FirebaseMethods().signOut();
+    if (isLogOut) {
+      Navigator.pushAndRemoveUntil(context,
+          MaterialPageRoute(builder: (context) {
+            return LoginScreen();
+          }), (Route<dynamic> route) => false);
+    }
   }
 }
 

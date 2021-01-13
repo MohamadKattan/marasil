@@ -1,14 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:marasil/utils/universal_variables.dart';
+import 'package:marasil/widget/cashed_image.dart';
 
 class FullPhoto extends StatelessWidget {
   // argument connect with chat page = craeteItem=FlatButton
   final String url;
-  FullPhoto({Key key, @required this.url}) : super(key: key);
+  final String id;
+  final String receiver;
+  final String sender;
+  FullPhoto({Key key, @required this.url,@required this.id,@required this.receiver,@required this.sender}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.teal[600],
+        actions:[IconButton(icon:Icon(Icons.delete), onPressed:()=>
+            Firestore.instance.collection('messages').document(sender).collection(receiver).document(id).get().then((document) {
+              if (document.exists) {document.reference.delete();}
+            })
+        )],
+        backgroundColor: Colors.black,
         title: Text('Full image'),
       ),
       body: FullPhotoScreen(url: url),
@@ -29,9 +40,12 @@ class FullPhotoScreenState extends State<FullPhotoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Image.network(
-        url,
-        fit: BoxFit.fitWidth,
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        child: CashedImage(
+          imageUrl: url,
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }

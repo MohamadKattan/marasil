@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'package:chewie/chewie.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker/emoji_picker.dart';
+import 'package:marasil/widget/fullVideo.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -22,13 +24,12 @@ import 'package:marasil/widget/customAppBar.dart';
 import 'package:marasil/widget/customTile.dart';
 import 'package:marasil/widget/fullImage.dart';
 import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
 
 class ChatScreen extends StatefulWidget {
   final User receiver;
   final String messageId;
-  ChatScreen({
-    this.receiver,this.messageId
-  });
+  ChatScreen({Key key, this.receiver, this.messageId}) : super(key: key);
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
@@ -39,6 +40,7 @@ class _ChatScreenState extends State<ChatScreen> {
   TextEditingController chatEditingController = TextEditingController();
   ScrollController _scrollController = ScrollController();
   FocusNode focusNode = FocusNode();
+
   // this bool if user start typing it will show icon send if not icon record and image
   bool isWritting = false;
   // id sender
@@ -48,6 +50,8 @@ class _ChatScreenState extends State<ChatScreen> {
   bool showEmojiPicker = false;
   String _currentUser;
   String messageId = Uuid().v4();
+  String receiverId;
+  String senderId;
   //for call
   ImageUploadProvider _imageUploadProvider;
   @override
@@ -67,9 +71,7 @@ class _ChatScreenState extends State<ChatScreen> {
             .document(_currentUser)
             .updateData({'chattingWith': widget.receiver.uid});
 
-       String  id =  messageId = Uuid().v4();
-
-
+        String id = messageId = Uuid().v4();
       });
     });
   }
@@ -228,7 +230,8 @@ class _ChatScreenState extends State<ChatScreen> {
           isWritting
               ? Container()
               : GestureDetector(
-                  onTap: () => pickImage(source: ImageSource.camera),
+                  // pickImage(source: ImageSource.camera);
+                  onTap: () => buttonSheetToPickER(context),
                   child: Icon(Icons.camera_alt),
                 ),
           isWritting
@@ -353,7 +356,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     Expanded(
                         child: Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Tools',
+                            child: Text('Share Center',
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 20,
@@ -366,17 +369,14 @@ class _ChatScreenState extends State<ChatScreen> {
                 children: [
                   ModalTile(
                       onTap: () => pickImage(source: ImageSource.gallery),
-                      title: 'Media',
+                      title: 'gallery',
                       icon: Icons.image,
-                      subTitle: 'Share Image'),
+                      subTitle: 'Share Image '),
                   ModalTile(
-                      title: 'Video',
+                      onTap: () => pickVideo(source: ImageSource.gallery),
+                      title: 'gallery',
                       icon: Icons.image,
-                      subTitle: 'Share video'),
-                  ModalTile(
-                      title: 'connect',
-                      icon: Icons.image,
-                      subTitle: 'Share connect'),
+                      subTitle: 'Share video '),
                 ],
               ))
             ],
@@ -406,7 +406,7 @@ class _ChatScreenState extends State<ChatScreen> {
   // for get message from snap shot
   getMessage(Message message) {
     // this type 'image 'from upload image in firebase method
-    return message.type != 'image'
+    return message.type != 'image' && message.type != 'video'
         ? Text(
             message.message,
             style: TextStyle(color: Colors.white, fontSize: 16),
@@ -417,9 +417,10 @@ class _ChatScreenState extends State<ChatScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => FullPhoto(
-                              url: message.photoUrl,
-                            ))),
-                onLongPress: () => controlDeletePost(context),
+                            url: message.photoUrl,
+                            receiver: widget.receiver.uid,
+                            id: messageId,
+                            sender: _currentUser))),
                 child: CashedImage(
                   imageUrl: message.photoUrl,
                   height: 250,
@@ -427,7 +428,32 @@ class _ChatScreenState extends State<ChatScreen> {
                   radius: 10,
                 ),
               )
-            : Text('error');
+            : message.video != null
+                ? Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: FlatButton(
+                      onLongPress: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => FullVideo(
+                                    urlVideo: message.video,
+                                    receiver: widget.receiver.uid,
+                                    id: messageId,
+                                    sender: _currentUser)));
+                      },
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * (30 / 100),
+                        width: MediaQuery.of(context).size.width * (80 / 100),
+                        child: ChewieList(
+                          videoPlayerController:
+                              VideoPlayerController.network(message.video),
+                          looping: true,
+                        ),
+                      ),
+                    ),
+                  )
+                : Text('');
   }
 
 // this container inCload emoji
@@ -450,7 +476,50 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-//this method for pick image from cammer
+  // this methoed for show buttomSheet for pickImage or video by  camera
+  void buttonSheetToPickER(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        elevation: 0,
+        backgroundColor: UniversalVariables.blackColor,
+        builder: (context) {
+          return Column(
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 15),
+                child: Row(
+                  children: [
+                    IconButton(icon: Icon(Icons.close,color:UniversalVariables.blueColor),onPressed: ()=>Navigator.pop(context)),
+                    Text('Share your media',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ),
+              Flexible(
+                  child: Column(
+                children: [
+                  ModalTile(
+                      onTap: () => pickImage(source: ImageSource.camera),
+                      title: 'Media',
+                      icon: Icons.camera,
+                      subTitle: 'Share Image'),
+                  ModalTile(
+                      onTap: () => pickVideo(source: ImageSource.camera),
+                      title: 'Video',
+                      icon: Icons.videocam,
+                      subTitle: 'Share video'),
+
+                ],
+              ))
+            ],
+          );
+        });
+  }
+
+//this method for pick image from camera
   pickImage({@required ImageSource source}) async {
     File selectedImage = await Utils.pickImage(source: source);
 
@@ -463,50 +532,26 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  controlDeletePost(BuildContext mcontext) {
-    return showDialog(
-        context: mcontext,
-        builder: (context) {
-          return SimpleDialog(
-            title: Text(
-              'What do you want to do ?',
-              style: TextStyle(color: Colors.white),
-            ),
-            children: [
-              SimpleDialogOption(
-                child: Text(
-                  'Delete',
-                  style: TextStyle(color: Colors.white, fontSize: 16.0),
-                ),
-                onPressed: () async{
-                  Navigator.pop(context);
-                  deleteImage();
-                },
-              ),
-              SimpleDialogOption(
-                child: Text(
-                  'Cancel',
-                  style: TextStyle(color: Colors.white, fontSize: 16.0),
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-
-                },
-              ),
-            ],
-          );
-        });
-  }
-
-  void deleteImage() {
-
-    _repository.deleteImage(
+//this method for pick video from camera
+  pickVideo({@required ImageSource source}) async {
+    // ignore: deprecated_member_use
+    File selectedVideo = await Utils.pickVideo(source: source);
+    _repository.UploadVideo(
+      video: selectedVideo,
       receiverId: widget.receiver.uid,
       senderId: _currentUser,
+      imageProvide: _imageUploadProvider,
       messageId: messageId,
     );
   }
 
+  void deleteImage() {
+    _repository.deleteImage(
+      receiverId: widget.receiver.uid,
+      senderId: sender.uid,
+      messageId: messageId,
+    );
+  }
 }
 
 // this class for creat item in toolsButton List View
@@ -537,7 +582,7 @@ class ModalTile extends StatelessWidget {
           padding: EdgeInsets.all(10),
           child: Icon(
             icon,
-            color: UniversalVariables.greyColor,
+            color: UniversalVariables.blueColor,
             size: 38,
           ),
         ),
@@ -551,5 +596,53 @@ class ModalTile extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+//no1cheiwe for play video
+class ChewieList extends StatefulWidget {
+  final VideoPlayerController videoPlayerController;
+  final bool looping;
+  ChewieList({
+    Key key,
+    @required this.videoPlayerController,
+    this.looping,
+  }) : super(key: key);
+  @override
+  _ChewieListState createState() => _ChewieListState();
+}
+//no2cheiwe for play video
+class _ChewieListState extends State<ChewieList> {
+  ChewieController _chewieController;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _chewieController = ChewieController(
+        videoPlayerController: widget.videoPlayerController,
+        aspectRatio: 16 / 9,
+        autoInitialize: true,
+        looping: widget.looping,
+        errorBuilder: (context, errorMessage) {
+          return Center(
+              child: Text(errorMessage, style: TextStyle(color: Colors.white)));
+        });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Chewie(
+        controller:  _chewieController,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    widget.videoPlayerController.dispose();
+    _chewieController.dispose();
   }
 }

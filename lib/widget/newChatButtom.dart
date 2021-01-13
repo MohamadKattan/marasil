@@ -9,7 +9,7 @@ class newChatButtom extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
           gradient: UniversalVariables.fabGradient,
-          borderRadius: BorderRadius.circular(80.0)),
+          borderRadius: BorderRadius.circular(30.0)),
       child: IconButton(
           onPressed: () => Navigator.push(
               context, MaterialPageRoute(builder: (context) => SearchScreen())),
