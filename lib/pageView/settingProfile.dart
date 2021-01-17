@@ -10,6 +10,7 @@ import 'package:marasil/provider/userProvider.dart';
 import 'package:marasil/resources/firebase_method.dart';
 import 'package:marasil/screens/loginScreen.dart';
 import 'package:marasil/utils/universal_variables.dart';
+import 'package:marasil/widget/changeThemeButton.dart';
 import 'package:provider/provider.dart';
 
 class SittingsScreen extends StatefulWidget {
@@ -18,9 +19,9 @@ class SittingsScreen extends StatefulWidget {
 }
 
 class _SittingsScreenState extends State<SittingsScreen> {
-  String photoUrl='';
-  String name='';
-  String uid='';
+  String photoUrl = '';
+  String name = '';
+  String uid = '';
   UserProvider userProvider;
   // for controller textfield
   TextEditingController nickNametextEditingController;
@@ -33,7 +34,6 @@ class _SittingsScreenState extends State<SittingsScreen> {
   // these key for textField help to update
   final FocusNode nickNameFocusNode = FocusNode();
 
-
   @override
   void initState() {
     super.initState();
@@ -42,18 +42,15 @@ class _SittingsScreenState extends State<SittingsScreen> {
       await userProvider.refreashUser();
       readDataFromLocal();
     });
-
   }
+
   //for read data from shared locally
   void readDataFromLocal() async {
-
     uid = userProvider.getUser.uid;
     name = userProvider.getUser.name;
-    photoUrl =userProvider.getUser.profilePhoto;
-
+    photoUrl = userProvider.getUser.profilePhoto;
 
     nickNametextEditingController = TextEditingController(text: name);
-
 
     setState(() {});
   }
@@ -62,18 +59,27 @@ class _SittingsScreenState extends State<SittingsScreen> {
   Widget build(BuildContext context) {
     userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
-      backgroundColor: UniversalVariables.blackColor,
+      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         iconTheme: IconThemeData(color: Colors.white),
-        backgroundColor: Colors.blue[700],
+        backgroundColor: Theme.of(context).primaryColor,
         centerTitle: true,
         title: Text(
           'Settings',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle( fontWeight: FontWeight.bold),
         ),
-      ),
-      body: Stack(
+        actions: [Column(
+          children: [
+            Padding(
+              padding:EdgeInsets.only(top:5.0),
+              child: Text('L/D'),
+            ),
+            Flexible(child: ChangeThemeButton()),
+          ],
+        ),],
+        ),
+        body: Stack(
         children: [
           SingleChildScrollView(
             child: Column(
@@ -87,7 +93,7 @@ class _SittingsScreenState extends State<SittingsScreen> {
                       children: [
                         (imageFileAvatar == null)
                             // NOT NULL=Material
-                            ? (photoUrl!= '')
+                            ? (photoUrl != '')
                                 //IN THIS DISPLAY OLD IMAGE
                                 ? Material(
                                     child: CachedNetworkImage(
@@ -153,21 +159,20 @@ class _SittingsScreenState extends State<SittingsScreen> {
                         child: Text(
                           'Profile Name :',
                           style: TextStyle(
-                              color: UniversalVariables.blueColor,
                               fontStyle: FontStyle.italic,
                               fontWeight: FontWeight.bold),
                         )),
                     Container(
                       margin: EdgeInsets.only(left: 30.0, right: 30.0),
                       child: Theme(
-                        data: Theme.of(context)
-                            .copyWith(primaryColor: UniversalVariables.blueColor),
+                        data: Theme.of(context).copyWith(
+                            primaryColor: UniversalVariables.blueColor),
                         child: TextField(
-                          style: TextStyle(color: Colors.white, fontSize: 18.0),
+                          style: TextStyle( fontSize: 18.0),
                           decoration: InputDecoration(
                               contentPadding: EdgeInsets.all(5.0),
                               hintText: 'your name',
-                              hintStyle: TextStyle(color: Colors.black)),
+                              hintStyle: TextStyle(fontSize: 16.0)),
                           controller: nickNametextEditingController,
                           onChanged: (value) {
                             name = value;
@@ -184,7 +189,7 @@ class _SittingsScreenState extends State<SittingsScreen> {
                 // Buttons
                 Container(
                   child: FlatButton(
-                    onPressed:()=> updateData(uid: userProvider.getUser.uid),
+                    onPressed: () => updateData(uid: userProvider.getUser.uid),
                     child: Text(
                       'Update',
                       style: TextStyle(fontSize: 16.0),
@@ -222,7 +227,6 @@ class _SittingsScreenState extends State<SittingsScreen> {
 
 //for read data from shared locally
 
-
 // this method for pick an image for change image profile
   Future getImage() async {
     File newImageFile =
@@ -250,10 +254,10 @@ class _SittingsScreenState extends State<SittingsScreen> {
           await (await storageUploadTask.onComplete).ref.getDownloadURL();
       photoUrl = imageUrl.toString();
       Firestore.instance.collection('users').document(uid).updateData({
-        'profilePhoto':photoUrl ,
+        'profilePhoto': photoUrl,
         'name': name,
         // //         // 4_ after that will update to locale to shaerdprefrenc
-      }).then((value) async{
+      }).then((value) async {
         await userProvider.refreashUser();
         setState(() {
           isloading = false;
@@ -265,7 +269,6 @@ class _SittingsScreenState extends State<SittingsScreen> {
       });
       Fluttertoast.showToast(msg: 'Error update try again');
     }
-
   }
 
 // this method for updateDat nickname+aboutme to fireStore
@@ -282,12 +285,12 @@ class _SittingsScreenState extends State<SittingsScreen> {
     }).then((value) async {
       await userProvider.getUser;
       setState(() {
-
         isloading = false;
       });
       Fluttertoast.showToast(msg: 'Update don');
     });
   }
+
   // // this method for sign out
   void signOut(BuildContext context) async {
     bool isLogOut = await FirebaseMethods().signOut();

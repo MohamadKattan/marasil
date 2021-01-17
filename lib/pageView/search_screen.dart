@@ -35,7 +35,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: UniversalVariables.blackColor,
+      backgroundColor:Theme.of(context).primaryColor,
       appBar: searchUserAppBar(context),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 20),

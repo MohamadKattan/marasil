@@ -70,8 +70,6 @@ class _ChatScreenState extends State<ChatScreen> {
             .collection('users')
             .document(_currentUser)
             .updateData({'chattingWith': widget.receiver.uid});
-
-        String id = messageId = Uuid().v4();
       });
     });
   }
@@ -96,7 +94,6 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     _imageUploadProvider = Provider.of<ImageUploadProvider>(context);
     _userProvider = Provider.of<UserProvider>(context);
-
     return Scaffold(
       appBar: customAppBar(context),
       body: Container(
@@ -121,6 +118,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         ),
       ),
+      backgroundColor: Theme.of(context).primaryColor,
     );
   }
 
@@ -148,7 +146,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ));
   }
 
-// thext fiald + iconssend
+// text fiald + iconssend
   Widget controlChats() {
     setWritting(bool val) {
       setState(() {
@@ -213,7 +211,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       hideEmojiContainer();
                     }
                   },
-                  icon: Icon(Icons.face),
+                  icon: Icon(Icons.face,color: UniversalVariables.blueColor,),
                 ),
               ],
             ),
@@ -222,7 +220,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ? Container()
               : Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Icon(Icons.mic),
+                  child: Icon(Icons.mic,color: UniversalVariables.blueColor,),
                 ),
           SizedBox(
             width: 10,
@@ -302,18 +300,38 @@ class _ChatScreenState extends State<ChatScreen> {
     Message message,
   ) {
     Radius messagesRadius = Radius.circular(10);
-    return Container(
-      margin: EdgeInsets.only(top: 12),
-      constraints:
-          BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.55),
-      decoration: BoxDecoration(
-          color: UniversalVariables.senderColor,
-          borderRadius: BorderRadius.only(
-              topLeft: messagesRadius,
-              topRight: messagesRadius,
-              bottomLeft: messagesRadius)),
-      padding: EdgeInsets.all(10),
-      child: getMessage(message),
+    return Stack(
+      alignment: Alignment.bottomRight,
+      children: [
+        Container(
+          margin: EdgeInsets.only(top: 12),
+          constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.55),
+          decoration: BoxDecoration(
+              color: UniversalVariables.senderColor,
+              borderRadius: BorderRadius.only(
+                  topLeft: messagesRadius,
+                  topRight: messagesRadius,
+                  bottomLeft: messagesRadius)),
+          padding: EdgeInsets.all(10),
+          child: getMessage(message),
+        ),
+
+        // ignore: unrelated_type_equality_checks
+        widget.receiver.state != '2'
+            ? Icon(
+                Icons.check,
+                color: Colors.grey,
+                size: 10.0,
+              )
+            // ignore: unrelated_type_equality_checks
+            : widget.receiver.state != '1'
+                ? Icon(
+                    Icons.check,
+                    color: Colors.green,
+                  )
+                : Text(''),
+      ],
     );
   }
 
@@ -323,7 +341,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Container(
       margin: EdgeInsets.only(top: 12),
       constraints:
-          BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.65),
+          BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.55),
       decoration: BoxDecoration(
           color: UniversalVariables.receiverColor,
           borderRadius: BorderRadius.only(
@@ -340,7 +358,7 @@ class _ChatScreenState extends State<ChatScreen> {
     showModalBottomSheet(
         context: context,
         elevation: 0,
-        backgroundColor: UniversalVariables.blackColor,
+        backgroundColor: Theme.of(context).primaryColor,
         builder: (context) {
           return Column(
             children: [
@@ -358,7 +376,6 @@ class _ChatScreenState extends State<ChatScreen> {
                             alignment: Alignment.centerLeft,
                             child: Text('Share Center',
                                 style: TextStyle(
-                                    color: Colors.white,
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold)))),
                   ],
@@ -423,8 +440,8 @@ class _ChatScreenState extends State<ChatScreen> {
                             sender: _currentUser))),
                 child: CashedImage(
                   imageUrl: message.photoUrl,
-                  height: 250,
-                  width: 250,
+                  height: 225,
+                  width: 225,
                   radius: 10,
                 ),
               )
@@ -432,7 +449,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ? Padding(
                     padding: EdgeInsets.all(8.0),
                     child: FlatButton(
-                      onLongPress: () {
+                      onPressed: () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -443,13 +460,15 @@ class _ChatScreenState extends State<ChatScreen> {
                                     sender: _currentUser)));
                       },
                       child: Container(
+                        color: Colors.green,
                         height: MediaQuery.of(context).size.height * (30 / 100),
-                        width: MediaQuery.of(context).size.width * (80 / 100),
-                        child: ChewieList(
-                          videoPlayerController:
-                              VideoPlayerController.network(message.video),
-                          looping: true,
-                        ),
+                        width: MediaQuery.of(context).size.width * (70 / 100),
+                        child: Center(child: Icon(Icons.slow_motion_video_sharp,size: 25.0,))
+                        // ChewieList(
+                        //   videoPlayerController:
+                        //       VideoPlayerController.network(message.video),
+                        //   looping: true,
+                        // ),
                       ),
                     ),
                   )
@@ -481,7 +500,7 @@ class _ChatScreenState extends State<ChatScreen> {
     showModalBottomSheet(
         context: context,
         elevation: 0,
-        backgroundColor: UniversalVariables.blackColor,
+        backgroundColor:Theme.of(context).primaryColor,
         builder: (context) {
           return Column(
             children: [
@@ -489,10 +508,12 @@ class _ChatScreenState extends State<ChatScreen> {
                 padding: EdgeInsets.symmetric(vertical: 15),
                 child: Row(
                   children: [
-                    IconButton(icon: Icon(Icons.close,color:UniversalVariables.blueColor),onPressed: ()=>Navigator.pop(context)),
+                    IconButton(
+                        icon: Icon(Icons.close,
+                            color: UniversalVariables.blueColor),
+                        onPressed: () => Navigator.pop(context)),
                     Text('Share your media',
                         style: TextStyle(
-                            color: Colors.white,
                             fontSize: 20,
                             fontWeight: FontWeight.bold)),
                   ],
@@ -511,7 +532,6 @@ class _ChatScreenState extends State<ChatScreen> {
                       title: 'Video',
                       icon: Icons.videocam,
                       subTitle: 'Share video'),
-
                 ],
               ))
             ],
@@ -592,7 +612,7 @@ class ModalTile extends StatelessWidget {
         ),
         title: Text(
           title,
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -611,6 +631,7 @@ class ChewieList extends StatefulWidget {
   @override
   _ChewieListState createState() => _ChewieListState();
 }
+
 //no2cheiwe for play video
 class _ChewieListState extends State<ChewieList> {
   ChewieController _chewieController;
@@ -634,7 +655,7 @@ class _ChewieListState extends State<ChewieList> {
     return Padding(
       padding: EdgeInsets.all(8.0),
       child: Chewie(
-        controller:  _chewieController,
+        controller: _chewieController,
       ),
     );
   }

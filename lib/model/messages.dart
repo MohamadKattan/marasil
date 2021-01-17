@@ -25,7 +25,8 @@ class Message {
       this.type,
       this.timestamp,
       this.photoUrl,
-      this.messageId});
+      this.messageId,
+     });
   // will use just when send an image with text
   Message.videoMessage(
       {this.senderId,

@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return PickUpLayput(
       scffold: Scaffold(
-        backgroundColor: UniversalVariables.blackColor,
+        backgroundColor: Theme.of(context).primaryColor,
         body: PageView(
           children: [
             Container(
@@ -124,13 +124,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 10),
             child: CupertinoTabBar(
-              backgroundColor: UniversalVariables.blackColor,
+              backgroundColor: Theme.of(context).primaryColor,
               items: <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
                   icon: Icon(
                     Icons.chat,
                     color: (_page == 0)
-                        ? UniversalVariables.lightBlueColor
+                        ? UniversalVariables.blueColor
                         : Colors.grey,
                   ),
                   // ignore: deprecated_member_use
@@ -138,14 +138,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       style: TextStyle(
                           fontSize: 10.0,
                           color: (_page == 0)
-                              ? UniversalVariables.lightBlueColor
+                              ? UniversalVariables.blueColor
                               : Colors.grey)),
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
                     Icons.call,
                     color: (_page == 1)
-                        ? UniversalVariables.lightBlueColor
+                        ? UniversalVariables.blueColor
                         : Colors.grey,
                   ),
                   // ignore: deprecated_member_use

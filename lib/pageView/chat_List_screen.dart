@@ -27,7 +27,6 @@ class ChatListScreen extends StatelessWidget {
         IconButton(
           icon: Icon(
             Icons.search,
-            color: Colors.white,
           ),
           onPressed: () {
             Navigator.push(context,
@@ -37,7 +36,6 @@ class ChatListScreen extends StatelessWidget {
         IconButton(
           icon: Icon(
             Icons.exit_to_app_outlined,
-            color: Colors.white,
           ),
           onPressed: () {
             signOut(context);
@@ -50,7 +48,7 @@ class ChatListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: UniversalVariables.blackColor,
+      backgroundColor: Theme.of(context).primaryColor,
       appBar: customAppBar(context),
       floatingActionButton: newChatButtom(),
       body: chatListContainer(),

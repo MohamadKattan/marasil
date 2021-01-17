@@ -57,6 +57,7 @@ class Utils {
   // this metho for switch Userstate from String to number using for of or on line
   static int stateToNum(UserState userState) {
     switch (userState) {
+
       case UserState.offline:
         return 0;
 

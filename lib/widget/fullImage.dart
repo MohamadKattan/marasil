@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:marasil/utils/universal_variables.dart';
 import 'package:marasil/widget/cashed_image.dart';
 
 class FullPhoto extends StatelessWidget {

@@ -12,19 +12,18 @@ class LogScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return PickUpLayput(
       scffold: Scaffold(
-        backgroundColor: UniversalVariables.blackColor,
+        backgroundColor: Theme.of(context).primaryColor,
         appBar: AppBar(
           automaticallyImplyLeading: false,
             title: Text(
               'Calls',
-              style: TextStyle(color: Colors.grey, fontSize: 16),
+              style: TextStyle( fontSize: 16),
             ),
             centerTitle: true,
             actions: [
               IconButton(
                   icon: Icon(
                     Icons.search,
-                    color: Colors.grey,
                   ),
                   onPressed: () => Navigator.push(context,
                       MaterialPageRoute(builder: (context) => SearchScreen())))

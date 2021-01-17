@@ -19,6 +19,7 @@ class OnlineDot extends StatelessWidget {
       switch (Utils.numToState(state)) {
         case UserState.offline:
           return Colors.red;
+
         case UserState.onLine:
           return Colors.green;
         default:
