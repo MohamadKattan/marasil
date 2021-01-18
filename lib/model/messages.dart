@@ -8,6 +8,7 @@ class Message {
   String message;
   String photoUrl;
   String video;
+  String reVoice;
   Timestamp timestamp;
   Message({
     this.senderId,
@@ -18,22 +19,30 @@ class Message {
     this.messageId,
   });
 
-  // will use just when send an image with text
-  Message.imageMessage(
-      {this.senderId,
-      this.receiverId,
-      this.type,
-      this.timestamp,
-      this.photoUrl,
-      this.messageId,
-     });
-  // will use just when send an image with text
+  // will use just when send an image
+  Message.imageMessage({
+    this.senderId,
+    this.receiverId,
+    this.type,
+    this.timestamp,
+    this.photoUrl,
+    this.messageId,
+  });
+  // will use just when send an video
   Message.videoMessage(
       {this.senderId,
       this.receiverId,
       this.type,
       this.timestamp,
       this.video,
+      this.messageId});
+  // will use just when send voice
+  Message.reVoiceMessage(
+      {this.senderId,
+      this.receiverId,
+      this.type,
+      this.timestamp,
+      this.reVoice,
       this.messageId});
   // this for set
   Map toMap() {
@@ -71,6 +80,17 @@ class Message {
     return map;
   }
 
+  Map toreVoiceeMap() {
+    var map = Map<String, dynamic>();
+    map['senderId'] = this.senderId;
+    map['receiverId'] = this.receiverId;
+    map['type'] = this.type;
+    map['reVoice'] = this.reVoice;
+    map['timestamp'] = this.timestamp;
+    map['messageId'] = this.messageId;
+    return map;
+  }
+
   // this for get
   Message.fromMap(Map<String, dynamic> map) {
     this.senderId = map['senderId'];
@@ -79,6 +99,7 @@ class Message {
     this.message = map['message'];
     this.photoUrl = map['photoUrl'];
     this.video = map['video'];
+    this.reVoice = map['reVoice'];
     this.timestamp = map['timestamp'];
     this.messageId = map['messageId'];
   }

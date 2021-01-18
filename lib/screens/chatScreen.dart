@@ -3,6 +3,7 @@ import 'package:chewie/chewie.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker/emoji_picker.dart';
 import 'package:marasil/widget/fullVideo.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -52,6 +53,10 @@ class _ChatScreenState extends State<ChatScreen> {
   String messageId = Uuid().v4();
   String receiverId;
   String senderId;
+  // List<String> records;
+  // Directory appDirectory;
+  // File fileStream;
+
   //for call
   ImageUploadProvider _imageUploadProvider;
   @override
@@ -72,6 +77,17 @@ class _ChatScreenState extends State<ChatScreen> {
             .updateData({'chattingWith': widget.receiver.uid});
       });
     });
+    // records = [];
+    // getApplicationDocumentsDirectory().then((value) {
+    //   appDirectory = value;
+    //   appDirectory.list().listen((onData) {
+    //     records.add(onData.path);
+    //   }).onDone(() {
+    //     records = records.reversed.toList();
+    //     records = fileStream as List<String>;
+    //     setState(() {});
+    //   });
+    // });
   }
 
   //for show or hide keypord if we want to send text or message
@@ -211,7 +227,10 @@ class _ChatScreenState extends State<ChatScreen> {
                       hideEmojiContainer();
                     }
                   },
-                  icon: Icon(Icons.face,color: UniversalVariables.blueColor,),
+                  icon: Icon(
+                    Icons.face,
+                    color: UniversalVariables.blueColor,
+                  ),
                 ),
               ],
             ),
@@ -220,7 +239,10 @@ class _ChatScreenState extends State<ChatScreen> {
               ? Container()
               : Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Icon(Icons.mic,color: UniversalVariables.blueColor,),
+                  child: Icon(
+                    Icons.mic,
+                    color: UniversalVariables.blueColor,
+                  ),
                 ),
           SizedBox(
             width: 10,
@@ -460,16 +482,21 @@ class _ChatScreenState extends State<ChatScreen> {
                                     sender: _currentUser)));
                       },
                       child: Container(
-                        color: Colors.green,
-                        height: MediaQuery.of(context).size.height * (30 / 100),
-                        width: MediaQuery.of(context).size.width * (70 / 100),
-                        child: Center(child: Icon(Icons.slow_motion_video_sharp,size: 25.0,))
-                        // ChewieList(
-                        //   videoPlayerController:
-                        //       VideoPlayerController.network(message.video),
-                        //   looping: true,
-                        // ),
-                      ),
+                          color: Colors.green,
+                          height:
+                              MediaQuery.of(context).size.height * (30 / 100),
+                          width: MediaQuery.of(context).size.width * (70 / 100),
+                          child: Center(
+                              child: Icon(
+                            Icons.slow_motion_video_sharp,
+                            size: 25.0,
+                          ))
+                          // ChewieList(
+                          //   videoPlayerController:
+                          //       VideoPlayerController.network(message.video),
+                          //   looping: true,
+                          // ),
+                          ),
                     ),
                   )
                 : Text('');
@@ -500,7 +527,7 @@ class _ChatScreenState extends State<ChatScreen> {
     showModalBottomSheet(
         context: context,
         elevation: 0,
-        backgroundColor:Theme.of(context).primaryColor,
+        backgroundColor: Theme.of(context).primaryColor,
         builder: (context) {
           return Column(
             children: [
@@ -514,8 +541,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         onPressed: () => Navigator.pop(context)),
                     Text('Share your media',
                         style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold)),
+                            fontSize: 20, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
@@ -572,7 +598,71 @@ class _ChatScreenState extends State<ChatScreen> {
       messageId: messageId,
     );
   }
+
+// this method when record is ready for set to firestore+Storage
+//   _onCompletSetToData() {
+//     records.clear();
+//     appDirectory.list().listen((onData) {
+//       records.add(onData.path);
+//     }).onDone(() {
+//       records.sort();
+//       records = records.reversed.toList();
+//       records = records;
+//       setState(() {});
+//     });
+//     // _repository.setRecoerd(
+//     //   reVoice: fileStream,
+//     //   receiverId: widget.receiver.uid,
+//     //   senderId: sender.uid,
+//     //   messageId: messageId,
+//     //   imageProvide: _imageUploadProvider,
+//     );
+//   }
+//   String getDateFromFilePatah({@required String filePath}) {
+//     String fromEpoch = filePath.substring(
+//         filePath.lastIndexOf('/') + 1, filePath.lastIndexOf('.'));
+//
+//     DateTime recordedDate =
+//     DateTime.fromMillisecondsSinceEpoch(int.parse(fromEpoch));
+//     int year = recordedDate.year;
+//     int month = recordedDate.month;
+//     int day = recordedDate.day;
+//
+//     return ('$year-$month-$day');
+//   }
 }
+// Future<void> _onPlay({@required String filePath, @required int index}) async {
+//   AudioPlayer audioPlayer = AudioPlayer();
+//
+//   if (!_isPlaying) {
+//     audioPlayer.play(filePath, isLocal: true);
+//     setState(() {
+//       _selectedIndex = index;
+//       _completedPercentage = 0.0;
+//       _isPlaying = true;
+//     });
+//
+//     audioPlayer.onPlayerCompletion.listen((_) {
+//       setState(() {
+//         _isPlaying = false;
+//         _completedPercentage = 0.0;
+//       });
+//     });
+//     audioPlayer.onDurationChanged.listen((duration) {
+//       setState(() {
+//         _totalDuration = duration.inMicroseconds;
+//       });
+//     });
+//
+//     audioPlayer.onAudioPositionChanged.listen((duration) {
+//       setState(() {
+//         _currentDuration = duration.inMicroseconds;
+//         _completedPercentage =
+//             _currentDuration.toDouble() / _totalDuration.toDouble();
+//       });
+//     });
+//   }
+// }
 
 // this class for creat item in toolsButton List View
 class ModalTile extends StatelessWidget {

@@ -241,7 +241,7 @@ class FirebaseMethods {
           FirebaseStorage.instance.ref().child('${DateTime.now()}');
       StorageUploadTask _storageUploadTask = _storageReference.putFile(image);
       var url =
-      await (await _storageUploadTask.onComplete).ref.getDownloadURL();
+          await (await _storageUploadTask.onComplete).ref.getDownloadURL();
       return url;
     } catch (ex) {
       print(ex.toString());
@@ -278,27 +278,30 @@ class FirebaseMethods {
 //*****************************StartUploadVideo*************************************
 // no :1 for strat upload to Storage + firestore
   UploadVideo(File video, String receiverId, String senderId, String messageId,
-      ImageUploadProvider imageProvide)async {
+      ImageUploadProvider imageProvide) async {
     imageProvide.setToLoading();
     String url = await uploadVideoToStorage(video);
     imageProvide.setToIdle();
     setVideoMsg(url, senderId, receiverId, messageId); //tofirestore//to Stroage
   }
+
 //no2 for start upload video to storage
-  Future<String> uploadVideoToStorage(File video)async {
+  Future<String> uploadVideoToStorage(File video) async {
     try {
       _storageReference =
           FirebaseStorage.instance.ref().child('${DateTime.now()}');
       StorageUploadTask _storageUploadTask = _storageReference.putFile(video);
       var url =
-      await (await _storageUploadTask.onComplete).ref.getDownloadURL();
+          await (await _storageUploadTask.onComplete).ref.getDownloadURL();
       return url;
     } catch (ex) {
       print(ex.toString());
     }
   }
+
 // no3 for upload video to fire store
-  void setVideoMsg(String url, String senderId, String receiverId, String messageId)async {
+  void setVideoMsg(
+      String url, String senderId, String receiverId, String messageId) async {
     Message message;
     message = Message.videoMessage(
         receiverId: receiverId,
@@ -321,6 +324,7 @@ class FirebaseMethods {
         .document(message.messageId)
         .setData(map);
   }
+
 //*********************************END***********************************************
   deleteImage(String receiverId, String senderId, String messageId) async {
     Message Dmessage = Message();
@@ -346,4 +350,51 @@ class FirebaseMethods {
     });
   }
 
+//****************************************UploadReVoice****************************************
+  UploadReVoice(File reVoice, String receiverId, String senderId,
+      String messageId, ImageUploadProvider imageProvide) async {
+    imageProvide.setToLoading();
+    String url = await uploadReVoiceToStorage(reVoice);
+    imageProvide.setToIdle();
+    setReVoiceMsg(url, senderId, receiverId, messageId);
+  }
+
+  uploadReVoiceToStorage(File reVoice) async {
+    try {
+      _storageReference =
+          FirebaseStorage.instance.ref().child('recorder ${DateTime.now()}');
+      StorageUploadTask _storageUploadTask = _storageReference.putFile(reVoice);
+      var url =
+          await (await _storageUploadTask.onComplete).ref.getDownloadURL();
+      return url;
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  void setReVoiceMsg(
+      String url, String senderId, String receiverId, String messageId) async {
+    Message message;
+    message = Message.reVoiceMessage(
+        receiverId: receiverId,
+        senderId: senderId,
+        reVoice: url,
+        type: 'reVoice',
+        timestamp: Timestamp.now(),
+        messageId: messageId);
+    var map = message.toreVoiceeMap();
+    await firestore
+        .collection('messages')
+        .document(message.senderId)
+        .collection(message.receiverId)
+        .document(message.messageId)
+        .setData(map);
+
+    await _messageCollection
+        .document(message.receiverId)
+        .collection(message.senderId)
+        .document(message.messageId)
+        .setData(map);
+  }
 }
+//************************************endUploadReVoice***************************************************
