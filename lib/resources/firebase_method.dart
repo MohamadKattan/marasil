@@ -256,6 +256,7 @@ class FirebaseMethods {
         receiverId: receiverId,
         senderId: senderId,
         photoUrl: url,
+        message: 'image',
         type: 'image',
         timestamp: Timestamp.now(),
         messageId: messageId);
@@ -307,6 +308,7 @@ class FirebaseMethods {
         receiverId: receiverId,
         senderId: senderId,
         video: url,
+        message: 'video',
         type: 'video',
         timestamp: Timestamp.now(),
         messageId: messageId);
@@ -380,6 +382,7 @@ class FirebaseMethods {
         senderId: senderId,
         reVoice: url,
         type: 'reVoice',
+        message: 'reVoice',
         timestamp: Timestamp.now(),
         messageId: messageId);
     var map = message.toreVoiceeMap();

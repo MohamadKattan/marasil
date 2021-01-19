@@ -28,37 +28,35 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-
-    return ChangeNotifierProvider(create: (_) => ThemeProvider(),builder: (context, _){
-      final themeProvider = Provider.of<ThemeProvider>(context);
-      return  MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => ImageUploadProvider()),
-          ChangeNotifierProvider(create: (_) => UserProvider()),
-        ],builder: (context,_){
-          return   MaterialApp(
-              debugShowCheckedModeBanner: false,
-              title: 'mersail',
-               themeMode: themeProvider.themeMode,
-              theme:MyThemes.lightTheme,
-              darkTheme: MyThemes.darkTheme,
-              home:
-              FutureBuilder(
-                future: _repository.getCurrentUser(),
-                builder: (context, AsyncSnapshot<FirebaseUser> snapShot) {
-                  if (snapShot.hasData) {
-                    return HomeScreen();
-                  } else {
-                    return LoginScreen();
-                  }
-                },
-              )
-          );
+    return ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      builder: (context, _) {
+        final themeProvider = Provider.of<ThemeProvider>(context);
+        return MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => ImageUploadProvider()),
+            ChangeNotifierProvider(create: (_) => UserProvider()),
+          ],
+          builder: (context, _) {
+            return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                title: 'mersail',
+                themeMode: themeProvider.themeMode,
+                theme: MyThemes.lightTheme,
+                darkTheme: MyThemes.darkTheme,
+                home: FutureBuilder(
+                  future: _repository.getCurrentUser(),
+                  builder: (context, AsyncSnapshot<FirebaseUser> snapShot) {
+                    if (snapShot.hasData) {
+                      return HomeScreen();
+                    } else {
+                      return LoginScreen();
+                    }
+                  },
+                ));
+          },
+        );
       },
-
-      );
-    },);
-
-
+    );
   }
 }

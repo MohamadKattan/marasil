@@ -27,6 +27,7 @@ class Message {
     this.timestamp,
     this.photoUrl,
     this.messageId,
+    this.message,
   });
   // will use just when send an video
   Message.videoMessage(
@@ -35,6 +36,7 @@ class Message {
       this.type,
       this.timestamp,
       this.video,
+      this.message,
       this.messageId});
   // will use just when send voice
   Message.reVoiceMessage(
@@ -43,7 +45,8 @@ class Message {
       this.type,
       this.timestamp,
       this.reVoice,
-      this.messageId});
+      this.messageId,
+      this.message});
   // this for set
   Map toMap() {
     var map = Map<String, dynamic>();
@@ -55,10 +58,10 @@ class Message {
     map['timestamp'] = this.timestamp;
     return map;
   }
-
 // for set with image
   Map toImageMap() {
     var map = Map<String, dynamic>();
+    map['message'] = this.message;
     map['senderId'] = this.senderId;
     map['receiverId'] = this.receiverId;
     map['type'] = this.type;
@@ -71,6 +74,7 @@ class Message {
   // for set with image
   Map toVideoeMap() {
     var map = Map<String, dynamic>();
+    map['message'] = this.message;
     map['senderId'] = this.senderId;
     map['receiverId'] = this.receiverId;
     map['type'] = this.type;
@@ -82,6 +86,7 @@ class Message {
 
   Map toreVoiceeMap() {
     var map = Map<String, dynamic>();
+    map['message'] = this.message;
     map['senderId'] = this.senderId;
     map['receiverId'] = this.receiverId;
     map['type'] = this.type;

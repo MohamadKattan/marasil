@@ -194,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     });
     pageController.jumpToPage(page);
   }
-
+// for firebase messaging
   void registerNotification() {
     firebaseMessaging.requestNotificationPermissions();
 
@@ -211,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       print('onLaunch: $message');
       return;
     });
-
+// for creat token
     firebaseMessaging.getToken().then((token) {
       print('token: $token');
       Firestore.instance
@@ -222,7 +222,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       print(err.toString());
     });
   }
-
+// for local notfiction
   void configLocalNotification() {
     var initializationSettingsAndroid =
         new locel.AndroidInitializationSettings('app_icon');
@@ -231,7 +231,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
-
+// for local notfiction
   void showNotification(message) async {
     var androidPlatformChannelSpecifics = new locel.AndroidNotificationDetails(
       Platform.isAndroid
@@ -257,8 +257,5 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         message['body'].toString(), platformChannelSpecifics,
         payload: json.encode(message));
 
-//    await flutterLocalNotificationsPlugin.show(
-//        0, 'plain title', 'plain body', platformChannelSpecifics,
-//        payload: 'item x');
   }
 }

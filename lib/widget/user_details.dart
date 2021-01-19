@@ -5,6 +5,7 @@ import 'package:marasil/model/user.dart';
 import 'package:marasil/provider/userProvider.dart';
 import 'package:marasil/resources/firebase_method.dart';
 import 'package:marasil/screens/loginScreen.dart';
+import 'package:marasil/utils/universal_variables.dart';
 import 'package:marasil/widget/cashed_image.dart';
 import 'package:marasil/widget/customAppBar.dart';
 import 'package:marasil/widget/shimer.dart';
@@ -69,7 +70,7 @@ class UserDetailsBody extends StatelessWidget {
             children: [
               Text(user.name,
                   style: TextStyle(
-                      color: Colors.white,
+                      color: UniversalVariables.blueColor,
                       fontSize: 16,
                       fontWeight: FontWeight.bold)),
               SizedBox(height: 10),

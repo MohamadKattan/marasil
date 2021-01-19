@@ -9,7 +9,7 @@ exports.sendNotification = functions.firestore
 
     const doc = snap.data()
     console.log(doc)
-
+//all this value toke  from collection in fire base
     const senderId = doc.senderId
     const receiverId = doc.receiverId
     const contentMessage = doc.contact

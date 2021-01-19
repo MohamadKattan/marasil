@@ -15,7 +15,7 @@ class UserCircle extends StatelessWidget {
       onTap: () {
         showModalBottomSheet(
             isScrollControlled: true,
-            backgroundColor: UniversalVariables.blackColor,
+            backgroundColor: Theme.of(context).primaryColor,
             context: context,
             builder: (context) {
               return UserDetailsIsContainer();

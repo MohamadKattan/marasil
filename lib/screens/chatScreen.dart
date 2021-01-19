@@ -71,6 +71,7 @@ class _ChatScreenState extends State<ChatScreen> {
           name: user.displayName,
           profilePhoto: user.photoUrl,
         );
+        // this for update user sender chatingWith
         FirebaseMethods.firestore
             .collection('users')
             .document(_currentUser)
@@ -143,22 +144,25 @@ class _ChatScreenState extends State<ChatScreen> {
     return CustomAppBar(
         title: Text(widget.receiver.name),
         actions: <Widget>[
-          IconButton(
-              icon: Icon(Icons.video_call),
-              onPressed: () async {
-                await Permissions.cameraAndMicrophonePermissionsGranted()
-                    ? CallUtils.dial(
-                        from: sender, to: widget.receiver, context: context)
-                    : {};
-              }),
-          IconButton(icon: Icon(Icons.call), onPressed: () {}),
+          Padding(
+            padding:  EdgeInsets.only(right: 10,top: 4),
+            child: IconButton(
+                icon: Icon(Icons.video_call,color: UniversalVariables.blueColor,size: 35,),
+                onPressed: () async {
+                  await Permissions.cameraAndMicrophonePermissionsGranted()
+                      ? CallUtils.dial(
+                          from: sender, to: widget.receiver, context: context)
+                      : {};
+                }),
+          ),
+          // IconButton(icon: Icon(Icons.call), onPressed: () {}),
         ],
         centerTitle: false,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back,color: UniversalVariables.blueColor,),
         ));
   }
 
@@ -238,7 +242,7 @@ class _ChatScreenState extends State<ChatScreen> {
           isWritting
               ? Container()
               : Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10),
+                  padding: EdgeInsets.symmetric(vertical: 7),
                   child: Icon(
                     Icons.mic,
                     color: UniversalVariables.blueColor,
@@ -445,7 +449,7 @@ class _ChatScreenState extends State<ChatScreen> {
   // for get message from snap shot
   getMessage(Message message) {
     // this type 'image 'from upload image in firebase method
-    return message.type != 'image' && message.type != 'video'
+     return message.type != 'image' && message.type != 'video'
         ? Text(
             message.message,
             style: TextStyle(color: Colors.white, fontSize: 16),
@@ -489,13 +493,8 @@ class _ChatScreenState extends State<ChatScreen> {
                           child: Center(
                               child: Icon(
                             Icons.slow_motion_video_sharp,
-                            size: 25.0,
+                            size: 45.0,
                           ))
-                          // ChewieList(
-                          //   videoPlayerController:
-                          //       VideoPlayerController.network(message.video),
-                          //   looping: true,
-                          // ),
                           ),
                     ),
                   )
@@ -505,10 +504,11 @@ class _ChatScreenState extends State<ChatScreen> {
 // this container inCload emoji
   EmojiContainer() {
     return EmojiPicker(
-      bgColor: UniversalVariables.separatorColor,
+      bgColor:Theme.of(context).primaryColor,
       indicatorColor: UniversalVariables.blueColor,
       rows: 3,
-      columns: 7,
+      columns: 10,
+
       onEmojiSelected: (emoji, catogry) {
         setState(() {
           // for send
