@@ -44,7 +44,7 @@ class FirebaseRepository {
     video,receiverId,senderId,messageId,imageProvide,
   );
 
-  void setRecoerd({File reVoice, String receiverId, String senderId, String messageId, ImageUploadProvider imageProvide})=>
+  void setRecoerd({String reVoice, String receiverId, String senderId, String messageId, ImageUploadProvider imageProvide})=>
       _firebaseMethods.UploadReVoice(
         reVoice,receiverId,senderId,messageId,imageProvide,
       );

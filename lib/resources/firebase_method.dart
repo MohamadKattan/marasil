@@ -353,7 +353,7 @@ class FirebaseMethods {
   }
 
 //****************************************UploadReVoice****************************************
-  UploadReVoice(File reVoice, String receiverId, String senderId,
+  UploadReVoice(String reVoice, String receiverId, String senderId,
       String messageId, ImageUploadProvider imageProvide) async {
     imageProvide.setToLoading();
     String url = await uploadReVoiceToStorage(reVoice);
@@ -361,11 +361,12 @@ class FirebaseMethods {
     setReVoiceMsg(url, senderId, receiverId, messageId);
   }
 
-  uploadReVoiceToStorage(File reVoice) async {
+  uploadReVoiceToStorage(String reVoice) async {
     try {
       _storageReference =
           FirebaseStorage.instance.ref().child('recorder ${DateTime.now()}');
-      StorageUploadTask _storageUploadTask = _storageReference.putFile(reVoice);
+      StorageUploadTask _storageUploadTask =
+          _storageReference.putFile(File(reVoice));
       var url =
           await (await _storageUploadTask.onComplete).ref.getDownloadURL();
       return url;

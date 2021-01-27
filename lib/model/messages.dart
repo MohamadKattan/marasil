@@ -58,6 +58,7 @@ class Message {
     map['timestamp'] = this.timestamp;
     return map;
   }
+
 // for set with image
   Map toImageMap() {
     var map = Map<String, dynamic>();

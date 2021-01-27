@@ -25,7 +25,7 @@ class _FullVideoState extends State<FullVideo> {
     return Scaffold(
       appBar: AppBar(
         title: Text('playVideo'),
-        backgroundColor: Colors.black,
+        backgroundColor:Theme.of(context).primaryColor,
         centerTitle: false,
         actions: [
           IconButton(

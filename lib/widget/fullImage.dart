@@ -18,7 +18,7 @@ class FullPhoto extends StatelessWidget {
               if (document.exists) {document.reference.delete();}
             })
         )],
-        backgroundColor: Colors.black,
+        backgroundColor: Theme.of(context).primaryColor,
         title: Text('Full image'),
       ),
       body: FullPhotoScreen(url: url),
