@@ -18,27 +18,31 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: UniversalVariables.blackColor,
       body: SafeArea(
-        child: Column(
+        child: ListView(
           children: [
-            Stack(
-              alignment: Alignment.bottomCenter,
+            Column(
               children: [
-                Container(
-                    height: MediaQuery.of(context).size.height*0.96,
-                    width: MediaQuery.of(context).size.width,
-                    child: Image.asset('images/logo.png',fit: BoxFit.fill,)),
-                Center(child: loginButton()),
-                isLoginPressed
-                    ? Center(child: CircularProgressIndicator())
-                    : Text(''),
-                Center(
-                    child: Text(
-                      '..Click..',
-                      style: TextStyle(color: Colors.grey, fontSize: 18),
-                    )),
+                Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    Container(
+                        height: MediaQuery.of(context).size.height*0.96,
+                        width: MediaQuery.of(context).size.width,
+                        child: Image.asset('images/logo.png',fit: BoxFit.fill,)),
+                    Center(child: loginButton()),
+                    isLoginPressed
+                        ? Center(child: CircularProgressIndicator())
+                        : Text(''),
+                    Center(
+                        child: Text(
+                          '..Click..',
+                          style: TextStyle(color: Colors.grey, fontSize: 18),
+                        )),
+                  ],
+                ),
+
               ],
             ),
-
           ],
         ),
       ),

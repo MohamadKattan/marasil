@@ -42,7 +42,12 @@ class _ChatScreenState extends State<ChatScreen> {
   TextEditingController chatEditingController = TextEditingController();
   ScrollController _scrollController = ScrollController();
   FocusNode focusNode = FocusNode();
+
   AudioPlayer audioPlayer = AudioPlayer();
+  IconData playBtn = Icons.play_arrow;
+  Duration duration = Duration();
+  Duration position = Duration();
+  bool isPlaying = false;
 
   // this bool if user start typing it will show icon send if not icon record and image
   bool isWritting = false;
@@ -241,13 +246,6 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: featureButtonView(
                     receiver: widget.receiver.uid,
                   )),
-          // : Padding(
-          //     padding: EdgeInsets.symmetric(vertical: 7),
-          //     child: Icon(
-          //       Icons.mic,
-          //       color: UniversalVariables.blueColor,
-          //     ),
-          //   ),
           SizedBox(
             width: 10,
           ),
@@ -332,7 +330,7 @@ class _ChatScreenState extends State<ChatScreen> {
         Container(
           margin: EdgeInsets.only(top: 12),
           constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.55),
+              maxWidth: MediaQuery.of(context).size.width * 0.70),
           decoration: BoxDecoration(
               color: UniversalVariables.senderColor,
               borderRadius: BorderRadius.only(
@@ -367,7 +365,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Container(
       margin: EdgeInsets.only(top: 12),
       constraints:
-          BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.55),
+          BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.70),
       decoration: BoxDecoration(
           color: UniversalVariables.receiverColor,
           borderRadius: BorderRadius.only(
@@ -377,54 +375,6 @@ class _ChatScreenState extends State<ChatScreen> {
       padding: EdgeInsets.all(10),
       child: getMessage(message),
     );
-  }
-
-// this methoed for show buttomSheet
-  void addMediaModal(BuildContext context) {
-    showModalBottomSheet(
-        context: context,
-        elevation: 0,
-        backgroundColor: Theme.of(context).primaryColor,
-        builder: (context) {
-          return Column(
-            children: [
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 15),
-                child: Row(
-                  children: [
-                    FlatButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Icon(Icons.close)),
-                    Expanded(
-                        child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Share Center',
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold)))),
-                  ],
-                ),
-              ),
-              Flexible(
-                  child: ListView(
-                children: [
-                  ModalTile(
-                      onTap: () => pickImage(source: ImageSource.gallery),
-                      title: 'gallery',
-                      icon: Icons.image,
-                      subTitle: 'Share Image '),
-                  ModalTile(
-                      onTap: () => pickVideo(source: ImageSource.gallery),
-                      title: 'gallery',
-                      icon: Icons.image,
-                      subTitle: 'Share video '),
-                ],
-              ))
-            ],
-          );
-        });
   }
 
 // this method for strat send message and upload
@@ -449,7 +399,9 @@ class _ChatScreenState extends State<ChatScreen> {
   // for get message from snap shot
   getMessage(Message message) {
     // this type 'image 'from upload image in firebase method
-    return message.type != 'image' && message.type != 'video'
+    return message.type != 'image' &&
+            message.type != 'video' &&
+            message.type != 'reVoice'
         ? Text(
             message.message,
             style: TextStyle(color: Colors.white, fontSize: 16),
@@ -498,7 +450,26 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   )
                 : message.reVoice != null
-                    ? audioPlayer.play(message.reVoice)
+                    ? Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            InkWell(
+                              child: Icon(
+                                isPlaying
+                                    ? Icons.pause_circle_outline
+                                    : Icons.play_arrow,
+                                color: UniversalVariables.blueColor,
+                              ),
+                              onTap: () {
+                                getAudio(reVoiceurl: message.reVoice);
+                              },
+                            ),
+                            slider(),
+                          ],
+                        ),
+                      )
                     : Text('');
   }
 
@@ -565,6 +536,55 @@ class _ChatScreenState extends State<ChatScreen> {
         });
   }
 
+  // this methoed for show buttomSheet
+  void addMediaModal(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        elevation: 0,
+        backgroundColor: Theme.of(context).primaryColor,
+        builder: (context) {
+          return Column(
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 15),
+                child: Row(
+                  children: [
+                    FlatButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Icon(Icons.close)),
+                    Expanded(
+                        child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Share Center',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold)))),
+                  ],
+                ),
+              ),
+              Flexible(
+                  child: ListView(
+                children: [
+                  ModalTile(
+                      onTap: () => pickImage(source: ImageSource.gallery),
+                      title: 'gallery',
+                      icon: Icons.image,
+                      subTitle: 'Share Image '),
+                  ModalTile(
+                      onTap: () => pickVideo(source: ImageSource.gallery),
+                      title: 'gallery',
+                      icon: Icons.image,
+                      subTitle: 'Share video '),
+                 
+                ],
+              ))
+            ],
+          );
+        });
+  }
+
 //this method for pick image from camera
   pickImage({@required ImageSource source}) async {
     File selectedImage = await Utils.pickImage(source: source);
@@ -591,12 +611,49 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  void deleteImage() {
+//this for delete
+  void deleteItimefromFirebase() {
     _repository.deleteImage(
       receiverId: widget.receiver.uid,
       senderId: sender.uid,
       messageId: messageId,
     );
+  }
+
+// for using when playing revoice
+  Widget slider() {
+    return Slider.adaptive(
+      activeColor: UniversalVariables.blueColor,
+      inactiveColor: Colors.grey,
+      min: 0.0,
+      max: duration.inSeconds.toDouble(),
+      value: position.inSeconds.toDouble(),
+      onChanged: (double value) {
+        setState(() {
+          audioPlayer.seek(value);
+        });
+      },
+    );
+  }
+
+  void getAudio({@required String reVoiceurl}) async {
+    if (isPlaying) {
+      await audioPlayer.pause();
+      setState(() {
+        isPlaying = false;
+      });
+    } else {
+      audioPlayer.play(reVoiceurl, isLocal: false);
+      setState(() {
+        isPlaying = true;
+      });
+    }
+
+    audioPlayer.onAudioPositionChanged.listen((Duration dd) {
+      setState(() {
+        position = dd;
+      });
+    });
   }
 }
 

@@ -8,16 +8,46 @@ class FullPhoto extends StatelessWidget {
   final String id;
   final String receiver;
   final String sender;
-  FullPhoto({Key key, @required this.url,@required this.id,@required this.receiver,@required this.sender}) : super(key: key);
+  FullPhoto(
+      {Key key,
+      @required this.url,
+      @required this.id,
+      @required this.receiver,
+      @required this.sender})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions:[IconButton(icon:Icon(Icons.delete), onPressed:()=>
-            Firestore.instance.collection('messages').document(sender).collection(receiver).document(id).get().then((document) {
-              if (document.exists) {document.reference.delete();}
-            })
-        )],
+        actions: [
+          IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () async {
+                Firestore.instance
+                    .collection('messages')
+                    .document(sender)
+                    .collection(receiver)
+                    .document(id)
+                    .get()
+                    .then((document) {
+                  if (document.exists) {
+                    document.reference.delete();
+                  }
+                });
+                await Firestore.instance
+                    .collection('messages')
+                    .document(receiver)
+                    .collection(sender)
+                    .document(id)
+                    .get()
+                    .then((document) {
+                  if (document.exists) {
+                    document.reference.delete();
+                  }
+                  Navigator.maybePop(context);
+                });
+              })
+        ],
         backgroundColor: Theme.of(context).primaryColor,
         title: Text('Full image'),
       ),

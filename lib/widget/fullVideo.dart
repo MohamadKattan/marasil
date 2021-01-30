@@ -1,3 +1,4 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:marasil/resources/firebase_repository.dart';
@@ -25,22 +26,36 @@ class _FullVideoState extends State<FullVideo> {
     return Scaffold(
       appBar: AppBar(
         title: Text('playVideo'),
-        backgroundColor:Theme.of(context).primaryColor,
+        backgroundColor: Theme.of(context).primaryColor,
         centerTitle: false,
         actions: [
           IconButton(
               icon: Icon(Icons.delete),
-              onPressed: () => Firestore.instance
-                      .collection('messages')
-                      .document(widget.sender)
-                      .collection(widget.receiver)
-                      .document(widget.id)
-                      .get()
-                      .then((document) {
-                    if (document.exists) {
-                      document.reference.delete();
-                    }
-                  }))
+              onPressed: () async{
+                Firestore.instance
+                    .collection('messages')
+                    .document(widget.sender)
+                    .collection(widget.receiver)
+                    .document(widget.id)
+                    .get()
+                    .then((document) {
+                  if (document.exists) {
+                    document.reference.delete();
+                  }
+                });
+                await  Firestore.instance
+                    .collection('messages')
+                    .document(widget.receiver)
+                    .collection(widget.sender)
+                    .document(widget.id)
+                    .get()
+                    .then((document) {
+                  if (document.exists) {
+                    document.reference.delete();
+                  }
+                  Navigator.maybePop(context);
+                });
+              })
         ],
       ),
       body: ChewieList(

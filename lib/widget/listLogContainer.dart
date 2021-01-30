@@ -44,6 +44,7 @@ class _listLogContainerState extends State<listLogContainer> {
                       subtitle: Text(Utils.formatDateSTRING(_log.timestamp),
                           style: TextStyle(color: Colors.grey, fontSize: 16)),
                       onLongPress: () =>
+
                           showDialog(
                           context: context,
                           builder: (context) => AlertDialog(

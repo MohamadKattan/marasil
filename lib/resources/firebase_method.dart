@@ -336,9 +336,9 @@ class FirebaseMethods {
         .document(Dmessage.messageId)
         .get()
         .then((document) {
-      if (document.exists) {
-        document.reference.delete();
-      }
+    if (document.exists) {
+    document.reference.delete();
+    }
     });
     await _messageCollection
         .document(Dmessage.receiverId)
